@@ -119,12 +119,12 @@ public static class AppSettingsConfiguration
 		{
 			if(validatorClass is null)
 			{
-				builder.AppendLine($"\t\tservices.AddAppSettings<{settingsClass}>(configuration);");
+				builder.AppendLine($"\t\tservices.AddAppSettings<global::{settingsClass}>(configuration);");
 
 			}
 			else
 			{
-				builder.AppendLine($"\t\tservices.AddAppSettings<{settingsClass}, {validatorClass}>(configuration);");
+				builder.AppendLine($"\t\tservices.AddAppSettings<global::{settingsClass}, global::{validatorClass}>(configuration);");
 			}
 		}
 

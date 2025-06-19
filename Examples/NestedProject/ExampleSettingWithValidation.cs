@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using IeuanWalker.AppSettings;
 
-namespace NestedProject;
+namespace ApiProjectNestedClassLibrary;
 
 public class ExampleSettingWithValidation : IAppSettings
 {

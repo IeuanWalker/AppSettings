@@ -1,6 +1,6 @@
 ﻿using IeuanWalker.AppSettings;
 
-namespace NestedProject;
+namespace ApiProjectNestedClassLibrary;
 
 public class ExampleSettingWithoutValidation : IAppSettings
 {

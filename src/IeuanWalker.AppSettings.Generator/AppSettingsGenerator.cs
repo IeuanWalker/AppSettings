@@ -1,12 +1,12 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using IeuanWalker.Hangfire.RecurringJob.Generator.Helpers;
+using IeuanWalker.AppSettings.Generator.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace IeuanWalker.Hangfire.RecurringJob.Generator;
+namespace IeuanWalker.AppSettings.Generator;
 
 [Generator]
 public class AppSettingsSourceGenerator : IIncrementalGenerator

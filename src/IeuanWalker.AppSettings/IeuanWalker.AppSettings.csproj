@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GitInfoReportImportance>high</GitInfoReportImportance>
+    <PackageId>CardiffCouncil.BackendHelpers</PackageId>
+    <Summary>A library that contains common code/ components that can be used on any backend project type</Summary>
+    <Authors>Cardiff Council</Authors>
+    <Owners>Cardiff Council</Owners>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Product>CardiffCouncil.Helpers</Product>
+    <Copyright>© Cardiff Council. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/IeuanWalker/Maui.Switch</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/IeuanWalker/Maui.Switch</RepositoryUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <Title>Cardiff Council Helpers</Title>
+    <Description>A library that contains common code/ components that can be used on any backend project type</Description>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+    <PackageVersion>$(Version)$(VersionSuffix)</PackageVersion>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\CardiffCouncil.BackendHelpers.Generator\bin\$(Configuration)\netstandard2.0\CardiffCouncil.BackendHelpers.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+</Project>

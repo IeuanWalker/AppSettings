@@ -15,10 +15,7 @@ public static class AppSettingsExtensions
 		string sectionName = TAppSetting.SectionName ?? typeof(TAppSetting).Name;
 
 		return services.AddOptions<TAppSetting>()
-			.Configure(options =>
-			{
-				configuration.GetSection(sectionName).Bind(options);
-			});
+			.Configure(options => configuration.GetSection(sectionName).Bind(options));
 	}
 
 	/// <summary>
@@ -34,10 +31,7 @@ public static class AppSettingsExtensions
 		string sectionName = TAppSetting.SectionName ?? typeof(TAppSetting).Name;
 
 		return services.AddOptions<TAppSetting>()
-			.Configure(options =>
-			{
-				configuration.GetSection(sectionName).Bind(options);
-			})
+			.Configure(options => configuration.GetSection(sectionName).Bind(options))
 			.ValidateFluentValidation()
 			.ValidateOnStart();
 	}

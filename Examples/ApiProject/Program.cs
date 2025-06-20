@@ -1,13 +1,10 @@
 using ApiProject;
 using ApiProjectNestedClassLibrary;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddAppSettingsFromApiProject();
-
-builder.Services.AddAppSettingsFromApiProject(builder.Configuration);
-
-
 builder.Services.AddAppSettingsFromApiProjectNestedClassLibrary(builder.Configuration);
 
 // Add services to the container.
@@ -18,27 +15,14 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/test", (IOptions<ConfirmationEmailSettings> confirmationEmailSettings, IOptions<ConfirmationEmailSettings1> confirmationEmailSettings1, IOptions<ClosureEmailSettings> closureEmailSettings) =>
 {
-	"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-	var forecast = Enumerable.Range(1, 5).Select(index =>
-		new WeatherForecast
-		(
-			DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-			Random.Shared.Next(-20, 55),
-			summaries[Random.Shared.Next(summaries.Length)]
-		))
-		.ToArray();
-	return forecast;
+	return $"""
+	Subject from ConfirmationEmailSettings: {confirmationEmailSettings.Value.Subject}
+	Subject from ConfirmationEmailSettings1: {confirmationEmailSettings1.Value.Subject}
+	Subject from ClosureEmailSettings: {closureEmailSettings.Value.Subject}
+	""";
 });
 
-app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-	public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+await app.RunAsync();

@@ -12,5 +12,9 @@
     <ProjectReference Include="..\..\src\IeuanWalker.AppSettings\IeuanWalker.AppSettings.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AppSettings\" />
+  </ItemGroup>
+
 
 </Project>

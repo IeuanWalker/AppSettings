@@ -14,7 +14,6 @@ on:
 env:
   NET_VERSION: 8.0.100
   NUGET_PATH: './**/IeuanWalker.AppSettings.1.0.0.nupkg'
-  PROJECT_PATH: 'Scr/IeuanWalker.AppSettings/IeuanWalker.AppSettings.csproj'
   
 jobs:
   build:
@@ -23,14 +22,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+  
     - name: Setup .NET ${{ env.NET_VERSION }}
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: ${{ env.NET_VERSION }}
+
+    - name: Install MAUI Workload
+      run: dotnet workload install maui
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
+
     - uses: actions/upload-artifact@v4
       with:
         name: NuGet

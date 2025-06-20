@@ -26,8 +26,8 @@ jobs:
 
     - name: Restore dependencies
       run: |
-        dotnet restore ${{ env.PROJECT_GENTERATOR }}}}
-        dotnet restore ${{ env.PROJECT_LIBRARY }}}
+        dotnet restore ${{ env.PROJECT_GENTERATOR }}
+        dotnet restore ${{ env.PROJECT_LIBRARY }}
 
     - name: Build
       run: dotnet build ${{ env.PROJECT_GENTERATOR }} -c Release --no-restore

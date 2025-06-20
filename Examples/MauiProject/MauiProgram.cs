@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace MauiProject;
 public static class MauiProgram
@@ -6,6 +8,13 @@ public static class MauiProgram
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
+
+		using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MauiProject.appsettings.json")!;
+		IConfigurationRoot config = new ConfigurationBuilder()
+			.AddJsonStream(stream)
+			.Build();
+		builder.Configuration.AddConfiguration(config);
+
 		builder
 			.UseMauiApp<App>()
 			.ConfigureFonts(fonts =>

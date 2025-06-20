@@ -1,24 +1,31 @@
-﻿namespace MauiProject;
+﻿using System.Text;
+using Microsoft.Extensions.Options;
+using MuaiProject;
+
+namespace MauiProject;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
-
 	public MainPage()
 	{
 		InitializeComponent();
-	}
 
-	private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
+		IOptions<ConfirmationEmailSettings>? confirmationEmailSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<ConfirmationEmailSettings>>();
+		IOptions<ConfirmationEmailSettings1>? confirmationEmailSettings1 = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<ConfirmationEmailSettings1>>();
+		IOptions<ClosureEmailSettings>? closureEmailSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<ClosureEmailSettings>>();
 
-		if(count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
+		StringBuilder sb = new();
+
+		sb.AppendLine("Subject from ConfirmationEmailSettings: ").Append(confirmationEmailSettings?.Value.Subject);
+		sb.AppendLine(Environment.NewLine);
+		sb.AppendLine("Subject from ConfirmationEmailSettings1: ").Append(confirmationEmailSettings1?.Value.Subject);
+		sb.AppendLine(Environment.NewLine);
+		sb.AppendLine("Subject from ClosureEmailSettings: ").Append(closureEmailSettings?.Value.Subject);
+
+		Content = new Label()
+		{
+			Text = sb.ToString(),
+		};
 	}
 }
-

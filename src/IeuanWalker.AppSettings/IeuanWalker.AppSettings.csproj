@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>1.0.3</Version>
+    <Version>1.0.0</Version>
     <PackageId>IeuanWalker.AppSettings</PackageId>
     <Description>Validates and generates the registration code for IOptions configuration</Description>
     <PackageTags>Configuration;IOptions;Settings;AppSettings;Source Generator</PackageTags>

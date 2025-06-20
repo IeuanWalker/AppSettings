@@ -64,7 +64,7 @@ public class ConfirmationEmailSettings : IAppSettings
 ```csharp
 public class ConfirmationEmailSettings : IAppSettings
 {
-    public static string? SectionName => "NestedConfiguration_ConfirmationEmail";
+    public static string? SectionName => "NestedConfiguration:ConfirmationEmail";
     public required string Subject { get; set; }
 }
 ```
@@ -87,6 +87,10 @@ sealed class ConfirmationEmailSettingsValidator : AbstractValidator<Confirmation
 	}
 }
 ```
+
+# What does the error look like?
+If something fails validation as the application starts up, you will get an exception explaining the exact issue - 
+![image](https://github.com/user-attachments/assets/27465386-3970-49f7-863b-037313f4370f)
 
 # Considerations
 I do not recommend adding validation to a MAUI project as it can/ will slow startup, but you can enable it in debug by doing the following -

@@ -4,6 +4,10 @@ using ApiProjectNestedClassLibrary;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddAppSettingsFromApiProject();
+
+builder.Services.AddAppSettingsFromApiProject(builder.Configuration);
+
+
 builder.Services.AddAppSettingsFromApiProjectNestedClassLibrary(builder.Configuration);
 
 // Add services to the container.

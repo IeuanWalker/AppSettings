@@ -1,15 +1,9 @@
 ﻿using IeuanWalker.AppSettings;
 
-namespace ApiProject.AppSettings;
+namespace BlazorProject.AppSettings;
 
 public class ExampleSettingWithoutValidation : IAppSettings
 {
 	public static string? SectionName => "ExampleSetting";
 	public required string Test { get; set; }
-}
-
-
-public class ConfirmationEmailSettings : IAppSettings
-{
-	public required string Subject { get; set; }
 }

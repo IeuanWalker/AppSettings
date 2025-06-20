@@ -15,12 +15,17 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/test", (IOptions<ConfirmationEmailSettings> confirmationEmailSettings, IOptions<ConfirmationEmailSettings1> confirmationEmailSettings1, IOptions<ClosureEmailSettings> closureEmailSettings) =>
+app.MapGet("/test", (
+	IOptions<ConfirmationEmailSettings> confirmationEmailSettings,
+	IOptions<ConfirmationEmailSettings1> confirmationEmailSettings1,
+	IOptions<ClosureEmailSettings> closureEmailSettings,
+	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting) =>
 {
 	return $"""
 	Subject from ConfirmationEmailSettings: {confirmationEmailSettings.Value.Subject}
 	Subject from ConfirmationEmailSettings1: {confirmationEmailSettings1.Value.Subject}
 	Subject from ClosureEmailSettings: {closureEmailSettings.Value.Subject}
+	Text from NestedClassLibraryAppSetting: {nestedClassLibraryAppSetting.Value.Test}
 	""";
 });
 

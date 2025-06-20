@@ -64,7 +64,7 @@ public class ConfirmationEmailSettings : IAppSettings
 ```csharp
 public class ConfirmationEmailSettings : IAppSettings
 {
-    public static string? SectionName => "NestedConfiguration_ConfirmationEmail";
+    public static string? SectionName => "NestedConfiguration:ConfirmationEmail";
     public required string Subject { get; set; }
 }
 ```

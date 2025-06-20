@@ -9,8 +9,8 @@ on:
 
 env:
   NET_VERSION: 8.0.100
-  PROJECT_GENTERATOR: 'Scr/IeuanWalker.AppSettings.Generator/IeuanWalker.AppSettings.Generator.csproj'
-  PROJECT_LIBRARY: 'Scr/IeuanWalker.AppSettings/IeuanWalker.AppSettings.csproj'
+  PROJECT_GENTERATOR: 'src/IeuanWalker.AppSettings.Generator/IeuanWalker.AppSettings.Generator.csproj'
+  PROJECT_LIBRARY: 'src/IeuanWalker.AppSettings/IeuanWalker.AppSettings.csproj'
   NUGET_PATH: './**/IeuanWalker.AppSettings.${{ github.event.release.tag_name }}.nupkg'
   
 jobs:

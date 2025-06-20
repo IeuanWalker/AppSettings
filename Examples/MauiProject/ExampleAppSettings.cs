@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using IeuanWalker.AppSettings;
+﻿using IeuanWalker.AppSettings;
 
 namespace MuaiProject;
 
@@ -13,18 +12,8 @@ public class ConfirmationEmailSettings1 : IAppSettings
 	public required string Subject { get; set; }
 }
 
-public class ClosureEmailSettings : IAppSettings<ClosureEmailSettingsValidator>
+public class ClosureEmailSettings : IAppSettings
 {
 	public static string? SectionName => "NestedObject:ClosureEmail";
 	public required string Subject { get; set; }
-}
-
-sealed class ClosureEmailSettingsValidator : AbstractValidator<ClosureEmailSettings>
-{
-	public ClosureEmailSettingsValidator()
-	{
-		RuleFor(x => x.Subject)
-			.NotEmpty()
-			.MinimumLength(5);
-	}
 }

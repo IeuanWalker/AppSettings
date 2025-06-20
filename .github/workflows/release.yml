@@ -11,6 +11,7 @@ env:
   NET_VERSION: 8.0.100
   PROJECT_GENTERATOR: 'Scr/IeuanWalker.AppSettings.Generator/IeuanWalker.AppSettings.Generator.csproj'
   PROJECT_LIBRARY: 'Scr/IeuanWalker.AppSettings/IeuanWalker.AppSettings.csproj'
+  NUGET_PATH: './**/IeuanWalker.AppSettings.${{ github.event.release.tag_name }}.nupkg'
   
 jobs:
   build:
@@ -43,4 +44,4 @@ jobs:
       uses: NuGet/setup-nuget@v1.1.1
 
     - name: Publish
-      run: nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
+      run: nuget push ${{ env.NUGET_PATH }} -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}

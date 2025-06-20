@@ -29,7 +29,7 @@ sealed class FluentValidationOptions<TOptions> : IValidateOptions<TOptions> wher
 	public ValidateOptionsResult Validate(string? name, TOptions options)
 	{
 		// Null name is used to configure all named options.
-		if(_name is not null && _name != name)
+		if (_name is not null && _name != name)
 		{
 			// Ignored if not validating this instance.
 			return ValidateOptionsResult.Skip;
@@ -48,7 +48,7 @@ sealed class FluentValidationOptions<TOptions> : IValidateOptions<TOptions> wher
 
 		// Run the validation
 		ValidationResult results = validator.Validate(options);
-		if(results.IsValid)
+		if (results.IsValid)
 		{
 			// All good!
 			return ValidateOptionsResult.Success;
@@ -57,9 +57,9 @@ sealed class FluentValidationOptions<TOptions> : IValidateOptions<TOptions> wher
 		// Validation failed, so build the error message
 		string typeName = options.GetType().Name;
 		List<string> errors = [];
-		foreach(ValidationFailure? result in results.Errors)
+		foreach (ValidationFailure? result in results.Errors)
 		{
-			errors.Add($"Fluent validation failed for '{typeName}.{result.PropertyName}' with the error: '{result.ErrorMessage}'.");
+			errors.Add($"AppSettings validation failed for '{typeName}.{result.PropertyName}' with the error: '{result.ErrorMessage}'.");
 		}
 
 		return ValidateOptionsResult.Fail(errors);

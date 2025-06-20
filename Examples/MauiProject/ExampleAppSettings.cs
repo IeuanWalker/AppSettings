@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using IeuanWalker.AppSettings;
 
-namespace ApiProject;
+namespace MuaiProject;
 
 public class ConfirmationEmailSettings : IAppSettings
 {

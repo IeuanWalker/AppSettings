@@ -90,7 +90,7 @@ sealed class ConfirmationEmailSettingsValidator : AbstractValidator<Confirmation
 
 # Considerations
 I do not recommend adding validation to a MAUI project as it can/ will slow startup, but you can enable it in debug by doing the following -
-```
+```csharp
 #IF DEBUG
 public class AppSettings : IAppSettings<ConfirmationEmailSettingsValidator>
 #ELSE

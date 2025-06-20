@@ -1,66 +1,100 @@
-# Hangfire.RecurringJob [![Nuget](https://img.shields.io/nuget/v/IeuanWalker.Hangfire.RecurringJob)](https://www.nuget.org/packages/IeuanWalker.Hangfire.RecurringJob) [![Nuget](https://img.shields.io/nuget/dt/IeuanWalker.Hangfire.RecurringJob)](https://www.nuget.org/packages/IeuanWalker.Hangfire.RecurringJob) 
+# AppSettings [![Nuget](https://img.shields.io/nuget/v/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![Nuget](https://img.shields.io/nuget/dt/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Build](https://github.com/IeuanWalker/Hangfire.RecurringJob/actions/workflows/build.yml/badge.svg)](https://github.com/IeuanWalker/Hangfire.RecurringJob/actions/workflows/build.yml)
-
-Automatically generates the recurring job registration code using source generators
+Automatically generates the registration code for IOptions and can optionally validate them on startup using fluent validation.
 
 ## How to use it?
-1. Install the [NuGet package](https://www.nuget.org/packages/IeuanWalker.Hangfire.RecurringJob) into your project.
+1. Install the [NuGet package](https://www.nuget.org/packages/IeuanWalker.AppSettings) into your project.
 ```
-Install-Package IeuanWalker.Hangfire.RecurringJob
+Install-Package IeuanWalker.AppSettings
 ```
 
-2. Add the `RecurringJob` attribute to a class, and create an `Execute()` method.
+2. Inherit the `IAppSettings` interface onto the class that models your IOptions
 ```csharp
-[RecurringJob]
-public class RecurringJob1
+public class ConfirmationEmailSettings : IAppSettings
 {
-	public Task Execute()
-	{
-		throw new NotImplementedException();
-	}
-}
-
-[RecurringJob("* * * *")]
-public class RecurringJob2
-{
-	public void Execute()
-	{
-		throw new NotImplementedException();
-	}
-}
-
-[RecurringJob("* * * *", "Priority")]
-public class RecurringJob3
-{
-	public void Execute()
-	{
-		throw new NotImplementedException();
-	}
-}
-
-[RecurringJob]
-[RecurringJob("*/5 * * * *", "GMT", "Priority", "DataRetention")]
-public class RecurringJob4
-{
-	public void Execute()
-	{
-		throw new NotImplementedException();
-	}
+	public required string Subject { get; set; }
 }
 ```
-3. Register the recurring jobs
-> Once a `RecurringJob` attribute has been added to a class in your project an extension method for `IApplicationBuilder` will automatically be created.
-> The extension method name convention is AddRecurringJobsFrom + your assembly name.
+3. Register the app settings
+   > Once `IAppSettings` has been added to a class in your project, several extension methods will automatically be created.
+   > The extension method name convention is AddAppSettingsFrom + your assembly name, and the namespace is your assembly name.
+
+    3.1 An extension method for `IServiceCollection` is created for all project types by default
+    ```csharp
+    builder.Services.AddAppSettingsFromApiProjectNestedClassLibrary(builder.Configuration);
+    ```
+    
+    3.2 If your project is a backend/blazor project, then it will also have an extension method for `IHostApplicationBuilder`, allowing you to easily chain the registration in your progam.cs
+    ```csharp
+    builder.AddAppSettingsFromApiProject();
+    ```
+    
+    3.3 If it's a MAUI project, it will also have an extension method for `MauiAppBuilder`, allowing you to easily chain the registration in your MauiProgam.cs
+    ```csharp
+    builder.AddAppSettingsFromMauiProject();
+    ```
+
+## Section name
+By default, it maps the IOptions model to the section name based on the name of the model.
+For example, the following model -
 ```csharp
-app.AddRecurringJobsFromExampleProject();
+public class ConfirmationEmailSettings : IAppSettings
+{
+	public required string Subject { get; set; }
+}
 ```
 
-## Example
-Here is an example of what it looks like in use - 
-> Left is the example code, and right is the generated code
+Would automatically map to the following app setting section -
+```json
+{
+  "ConfirmationEmailSettings": {
+    "Subject": "Test subject"
+  }
+}
+```
 
-![image](https://github.com/IeuanWalker/Hangfire.RecurringJob.Generator/assets/6544051/cef12771-5178-46cf-9264-dbb54654efc6)
+If your model name and configuration section don't match or you want to bind a nested configuration, you can override this within your model by setting the `SectionName` property
+```csharp
+public class ConfirmationEmailSettings : IAppSettings
+{
+    public static string? SectionName => "ConfirmationEmail";
+    public required string Subject { get; set; }
+}
+```
+```csharp
+public class ConfirmationEmailSettings : IAppSettings
+{
+    public static string? SectionName => "NestedConfiguration_ConfirmationEmail";
+    public required string Subject { get; set; }
+}
+```
 
+## Validation
+To perform validation on startup using Fluent Validation, you just need to create an `AbstractValidator` for your app settings model and add that validator to the `IAppSettings` inheritance.
+```csharp
+public class ConfirmationEmailSettings : IAppSettings<ConfirmationEmailSettingsValidator>
+{
+	public required string Subject { get; set; }
+}
+
+sealed class ConfirmationEmailSettingsValidator : AbstractValidator<ConfirmationEmailSettings>
+{
+	public ConfirmationEmailSettingsValidator()
+	{
+		RuleFor(x => x.Subject)
+			.NotEmpty()
+			.MinimumLength(5);
+	}
+}
+```
+
+# Considerations
+I do not recommend adding validation to a MAUI project as it can/ will slow startup, but you can enable it in debug by doing the following -
+```csharp
+#IF DEBUG
+public class AppSettings : IAppSettings<ConfirmationEmailSettingsValidator>
+#ELSE
+public class AppSettings : IAppSettings
+#ENDIF
+```
 

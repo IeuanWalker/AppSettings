@@ -1,6 +1,6 @@
 # AppSettings [![Nuget](https://img.shields.io/nuget/v/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![Nuget](https://img.shields.io/nuget/dt/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Automatically generates the registration code for IOptions and can optionally validate them on startup using fluent validation.
+Automatically generates the registration code for IOptions and can optionally validate them on startup using [fluent validation](https://docs.fluentvalidation.net/en/latest/).
 
 ## How to use it?
 1. Install the [NuGet package](https://www.nuget.org/packages/IeuanWalker.AppSettings) into your project.

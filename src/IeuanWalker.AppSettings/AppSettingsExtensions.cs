@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Reflection;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -12,7 +13,11 @@ public static class AppSettingsExtensions
 	/// <typeparam name="TAppSetting">App settings model</typeparam>
 	public static OptionsBuilder<TAppSetting> AddAppSettings<TAppSetting>(this IServiceCollection services, IConfiguration configuration) where TAppSetting : class, IAppSettings
 	{
-		string sectionName = TAppSetting.SectionName ?? typeof(TAppSetting).Name;
+		SectionNameAttribute? sectionAttribute = (SectionNameAttribute?)typeof(TAppSetting).GetCustomAttribute(typeof(SectionNameAttribute));
+		
+		string sectionName = sectionAttribute is not null 
+			? sectionAttribute.SectionName
+			: TAppSetting.SectionName ?? typeof(TAppSetting).Name;
 
 		return services.AddOptions<TAppSetting>()
 			.Configure(options => configuration.GetSection(sectionName).Bind(options));

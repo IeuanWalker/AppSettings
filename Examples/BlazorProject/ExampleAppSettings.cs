@@ -13,9 +13,21 @@ public class ConfirmationEmailSettings1 : IAppSettings
 	public required string Subject { get; set; }
 }
 
+[SectionName("ConfirmationEmail")]
+public class ConfirmationEmailSettingsFromAttribute : IAppSettings
+{
+	public required string Subject { get; set; }
+}
+
 public class ClosureEmailSettings : IAppSettings<ClosureEmailSettingsValidator>
 {
 	public static string? SectionName => "NestedObject:ClosureEmail";
+	public required string Subject { get; set; }
+}
+
+[SectionName("NestedObject:ClosureEmail")]
+public class ClosureEmailSettingsFromAttribute : IAppSettings
+{
 	public required string Subject { get; set; }
 }
 

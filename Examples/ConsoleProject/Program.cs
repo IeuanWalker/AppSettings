@@ -18,13 +18,17 @@ ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
 IOptions<ConfirmationEmailSettings> confirmationEmailSettings = serviceProvider.GetService<IOptions<ConfirmationEmailSettings>>() ?? throw new NullReferenceException();
 IOptions<ConfirmationEmailSettings1> confirmationEmailSettings1 = serviceProvider.GetService<IOptions<ConfirmationEmailSettings1>>() ?? throw new NullReferenceException();
+IOptions<ConfirmationEmailSettingsFromAttribute> confirmationEmailSettingsFromAttribute = serviceProvider.GetService<IOptions<ConfirmationEmailSettingsFromAttribute>>() ?? throw new NullReferenceException();
 IOptions<ClosureEmailSettings> closureEmailSettings = serviceProvider.GetService<IOptions<ClosureEmailSettings>>() ?? throw new NullReferenceException();
+IOptions<ClosureEmailSettingsFromAttribute> closureEmailSettingsFromAttribute = serviceProvider.GetService<IOptions<ClosureEmailSettingsFromAttribute>>() ?? throw new NullReferenceException();
 
 
 Console.WriteLine($"""
 Subject from ConfirmationEmailSettings: {confirmationEmailSettings.Value.Subject}
 Subject from ConfirmationEmailSettings1: {confirmationEmailSettings1.Value.Subject}
+Subject from ConfirmationEmailSettingsFromAttribute: {confirmationEmailSettingsFromAttribute.Value.Subject}
 Subject from ClosureEmailSettings: {closureEmailSettings.Value.Subject}
+Subject from ClosureEmailSettingsFromAttribute: {closureEmailSettingsFromAttribute.Value.Subject}
 """);
 
 Console.ReadLine();

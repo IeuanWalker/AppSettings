@@ -21,7 +21,8 @@ app.MapGet("/test", (
 	IOptions<ConfirmationEmailSettingsFromAttribute> confirmationEmailSettingsFromAttribute,
 	IOptions<ClosureEmailSettings> closureEmailSettings,
 	IOptions<ClosureEmailSettingsFromAttribute> closureEmailSettingsFromAttribute,
-	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting) =>
+	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting,
+	IOptions<NestedClassLibraryAppSettingFromAttribute> nestedClassLibraryAppSettingFromAttribute) =>
 {
 	return $$"""
 	Subject from ConfirmationEmailSettings: {{confirmationEmailSettings.Value.Subject}}
@@ -30,6 +31,7 @@ app.MapGet("/test", (
 	Subject from ClosureEmailSettings: {{closureEmailSettings.Value.Subject}}
 	Subject from ClosureEmailSettingsFromAttribute: {{closureEmailSettingsFromAttribute.Value.Subject}}
 	Text from NestedClassLibraryAppSetting: {{nestedClassLibraryAppSetting.Value.Test}}
+	Text from NestedClassLibraryAppSettingFromAttribute: {{nestedClassLibraryAppSettingFromAttribute.Value.Test}}
 	""";
 });
 

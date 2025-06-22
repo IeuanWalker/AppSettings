@@ -80,61 +80,11 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					continue;
 				}
 
-				// Validate and extract the validation type, ensure the validator is for the correct type the for the AppSettings class
 				string? validatorClass = null;
 				if (SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterface) && interfaceType.TypeArguments.Length == 1)
 				{
 					ITypeSymbol validatorType = interfaceType.TypeArguments[0];
-
-					// Check if validator is actually for this type
-					bool isValidValidator = false;
-
-					// Check if it's a named type that we can examine
-					if (validatorType is INamedTypeSymbol namedValidatorType)
-					{
-						// Check base class (AbstractValidator<T>)
-						if (namedValidatorType.BaseType?.IsGenericType == true &&
-								namedValidatorType.BaseType.TypeArguments.Length == 1 &&
-								SymbolEqualityComparer.Default.Equals(namedValidatorType.BaseType.TypeArguments[0], typeSymbol))
-						{
-							isValidValidator = true;
-						}
-
-						// Check interfaces (IValidator<T>)
-						foreach (INamedTypeSymbol validatorInterface in namedValidatorType.AllInterfaces)
-						{
-							if (validatorInterface.IsGenericType &&
-								validatorInterface.Name == "IValidator" &&
-								validatorInterface.TypeArguments.Length == 1 &&
-								SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol))
-							{
-								isValidValidator = true;
-								break;
-							}
-						}
-					}
-
-					if (isValidValidator)
-					{
-						validatorClass = validatorType.ToDisplayString();
-					}
-					else
-					{
-						// Report diagnostic that validator is not for the correct type
-						context.ReportDiagnostic(Diagnostic.Create(
-							new DiagnosticDescriptor(
-								id: "APPSET001",
-								title: "Invalid validator type",
-								messageFormat: "The validator type '{0}' must validate the settings class '{1}'",
-								category: "AppSettings",
-								defaultSeverity: DiagnosticSeverity.Error,
-								isEnabledByDefault: true),
-							typeDeclaration.GetLocation(),
-							validatorType.Name,
-							typeSymbol.Name));
-
-						continue;
-					}
+					validatorClass = validatorType.ToDisplayString();
 				}
 
 				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol, typeDeclaration)));

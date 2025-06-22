@@ -14,6 +14,13 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 	const string fullInterfaceBase = "IeuanWalker.AppSettings.IAppSettings";
 	const string fullInterface = "IeuanWalker.AppSettings.IAppSettings`1";
 	static string? assemblyName;
+	static readonly DiagnosticDescriptor diagnosticDescriptorValidatorWrongType = new(
+		id: "APPSET001",
+		title: "Invalid validator type",
+		messageFormat: "The validator type '{0}' must validate the settings class '{1}'",
+		category: "AppSettings",
+		defaultSeverity: DiagnosticSeverity.Error,
+		isEnabledByDefault: true);
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
@@ -117,13 +124,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					{
 						// Report diagnostic that validator is not for the correct type
 						context.ReportDiagnostic(Diagnostic.Create(
-							new DiagnosticDescriptor(
-								id: "APPSET001",
-								title: "Invalid validator type",
-								messageFormat: "The validator type '{0}' must validate the settings class '{1}'",
-								category: "AppSettings",
-								defaultSeverity: DiagnosticSeverity.Error,
-								isEnabledByDefault: true),
+							diagnosticDescriptorValidatorWrongType,
 							typeDeclaration.GetLocation(),
 							validatorType.Name,
 							typeSymbol.Name));

@@ -207,10 +207,15 @@ public static class AppSettingsConfiguration
 ");
 		foreach ((string settingsClass, string? validatorClass, string sectionName) in settingsClasses)
 		{
+			builder.AppendLine();
+
 			if (validatorClass is null)
 			{
-				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>().Configure(options => configuration.GetSection(\"{sectionName}\").Bind(options));");
-				builder.AppendLine();
+				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>()");
+				builder.AppendLine($"\t\t\t.Configure(options => configuration.GetSection(\"{sectionName}\").Bind(options))");
+				builder.AppendLine($"\t\t\t.ValidateDataAnnotations()");
+				builder.AppendLine($"\t\t\t.ValidateOnStart();");
+
 			}
 			else
 			{
@@ -219,7 +224,6 @@ public static class AppSettingsConfiguration
 				builder.AppendLine($"\t\t\t.Configure(options => configuration.GetSection(\"{sectionName}\").Bind(options))");
 				builder.AppendLine($"\t\t\t.ValidateFluentValidation()");
 				builder.AppendLine($"\t\t\t.ValidateOnStart();");
-				builder.AppendLine();
 			}
 		}
 

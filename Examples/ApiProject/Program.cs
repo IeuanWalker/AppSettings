@@ -16,15 +16,35 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.MapGet("/test", (
-	IOptions<ConfirmationEmailSettings> confirmationEmailSettings,
-	IOptions<ConfirmationEmailSettings1> confirmationEmailSettings1,
-	IOptions<ClosureEmailSettings> closureEmailSettings,
+	IOptions<DataAnnotationWithNoValidationOrSectionNameSettings> dataAnnotationWithNoValidationOrSectionNameSettings,
+	IOptions<DataAnnotationWithNoValidationButWithSectionNameSettings> dataAnnotationWithNoValidationButWithSectionNameSettings,
+	IOptions<DataAnnotationWithValidationButNoSectionNameSettings> dataAnnotationWithValidationButNoSectionNameSettings,
+	IOptions<DataAnnotationWithValidationAndSectionNameSettings> dataAnnotationWithValidationAndSectionNameSettings,
+	IOptions<DataAnnotationNestedSettings> dataAnnotationNestedSettings,
+
+	IOptions<FluentValidationWithNoValidationOrSectionNameSettings> fluentValidationWithNoValidationOrSectionNameSettings,
+	IOptions<FluentValidationWithNoValidationButWithSectionNameSettings> fluentValidationWithNoValidationButWithSectionNameSettings,
+	IOptions<FluentValidationWithValidationButNoSectionNameSettings> fluentValidationWithValidationButNoSectionNameSettings,
+	IOptions<FluentValidationWithValidationAndSectionNameSettings> fluentValidationWithValidationAndSectionNameSettings,
+	IOptions<FluentValidationNestedSettings> fluentValidationNestedSettings,
 	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting) =>
 {
 	return $"""
-	Subject from ConfirmationEmailSettings: {confirmationEmailSettings.Value.Subject}
-	Subject from ConfirmationEmailSettings1: {confirmationEmailSettings1.Value.Subject}
-	Subject from ClosureEmailSettings: {closureEmailSettings.Value.Subject}
+	DataAnnotation
+	Text from DataAnnotationWithNoValidationOrSectionNameSettings: {dataAnnotationWithNoValidationOrSectionNameSettings.Value.Text}
+	Text from DataAnnotationWithNoValidationButWithSectionNameSettings: {dataAnnotationWithNoValidationButWithSectionNameSettings.Value.Text}
+	Text from DataAnnotationWithValidationButNoSectionNameSettings: {dataAnnotationWithValidationButNoSectionNameSettings.Value.Text}
+	Text from DataAnnotationWithValidationAndSectionNameSettings: {dataAnnotationWithValidationAndSectionNameSettings.Value.Text}
+	Text from DataAnnotationNestedSettings: {dataAnnotationNestedSettings.Value.Text}
+		
+	FluentValidation
+	Text from FluentValidationWithNoValidationOrSectionNameSettings: {fluentValidationWithNoValidationOrSectionNameSettings.Value.Text}
+	Text from FluentValidationWithNoValidationButWithSectionNameSettings: {fluentValidationWithNoValidationButWithSectionNameSettings.Value.Text}
+	Text from FluentValidationWithValidationButNoSectionNameSettings: {fluentValidationWithValidationButNoSectionNameSettings.Value.Text}
+	Text from FluentValidationWithValidationAndSectionNameSettings: {fluentValidationWithValidationAndSectionNameSettings.Value.Text}
+	Text from FluentValidationNestedSettings: {fluentValidationNestedSettings.Value.Text}
+		
+	Class Library
 	Text from NestedClassLibraryAppSetting: {nestedClassLibraryAppSetting.Value.Test}
 	""";
 });

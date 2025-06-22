@@ -4,7 +4,17 @@ using Microsoft.Extensions.Options;
 namespace BlazorProject.Components.Pages;
 public partial class Home
 {
-	[Inject] IOptions<ConfirmationEmailSettings> _confirmationEmailSettings { get; set; } = default!;
-	[Inject] IOptions<ConfirmationEmailSettings1> _confirmationEmailSettings1 { get; set; } = default!;
-	[Inject] IOptions<ClosureEmailSettings> _closureEmailSettings { get; set; } = default!;
+	// Data Annotations
+	[Inject] IOptions<DataAnnotationWithNoValidationOrSectionNameSettings> _dataAnnotationWithNoValidationOrSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<DataAnnotationWithNoValidationButWithSectionNameSettings> _dataAnnotationWithNoValidationButWithSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<DataAnnotationWithValidationButNoSectionNameSettings> _dataAnnotationWithValidationButNoSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<DataAnnotationWithValidationAndSectionNameSettings> _dataAnnotationWithValidationAndSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<DataAnnotationNestedSettings> _dataAnnotationNestedSettings { get; set; } = default!;
+
+	// Fluent Validation
+	[Inject] IOptions<FluentValidationWithNoValidationOrSectionNameSettings> _fluentValidationWithNoValidationOrSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<FluentValidationWithNoValidationButWithSectionNameSettings> _fluentValidationWithNoValidationButWithSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<FluentValidationWithValidationButNoSectionNameSettings> _fluentValidationWithValidationButNoSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<FluentValidationWithValidationAndSectionNameSettings> _fluentValidationWithValidationAndSectionNameSettings { get; set; } = default!;
+	[Inject] IOptions<FluentValidationNestedSettings> _fluentValidationNestedSettings { get; set; } = default!;
 }

@@ -55,6 +55,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
+		// Get the IAppSettings`1 interface symbol to check against
 		INamedTypeSymbol? appSettingsInterface = compilation.GetTypeByMetadataName(fullInterface);
 
 		if (appSettingsInterface is null)
@@ -62,6 +63,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
+		// Get the IValidator`1 interface symbol to check against
 		INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
 
 		foreach (TypeDeclarationSyntax? typeDeclaration in types)
@@ -79,7 +81,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 				continue;
 			}
 
-			// Check if the type implements IAppSettings<T>
+			// Check if the type implements IAppSettings or IAppSettings<T>
 			foreach (INamedTypeSymbol interfaceType in typeSymbol.AllInterfaces)
 			{
 				// If the class doesn't implement either IAppSettings or IAppSettings<T>, skip it
@@ -119,7 +121,6 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					}
 					else
 					{
-						// Report diagnostic that validator is not for the correct type
 						context.ReportDiagnostic(Diagnostic.Create(
 							diagnosticDescriptorValidatorWrongType,
 							typeDeclaration.GetLocation(),
@@ -139,7 +140,6 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
-		// Check if IHostApplicationBuilder is available
 		bool hasIHostApplicationBuilder = compilation.GetTypeByMetadataName("Microsoft.Extensions.Hosting.IHostApplicationBuilder") is not null;
 		bool hasMauiAppBuilder = compilation.GetTypeByMetadataName("Microsoft.Maui.Hosting.MauiAppBuilder") is not null;
 
@@ -149,7 +149,6 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 
 	static string GetSectionName(INamedTypeSymbol namedTypeSymbol, TypeDeclarationSyntax typeDeclarationSyntax)
 	{
-		// Extract SectionName if available
 		string sectionName = namedTypeSymbol.Name;
 
 		foreach (ISymbol member in namedTypeSymbol.GetMembers("SectionName"))

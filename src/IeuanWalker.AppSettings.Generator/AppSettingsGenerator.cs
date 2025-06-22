@@ -14,6 +14,13 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 	const string fullInterfaceBase = "IeuanWalker.AppSettings.IAppSettings";
 	const string fullInterface = "IeuanWalker.AppSettings.IAppSettings`1";
 	static string? assemblyName;
+	static readonly DiagnosticDescriptor diagnosticDescriptorValidatorWrongType = new(
+		id: "APPSET001",
+		title: "Invalid validator type",
+		messageFormat: "The validator type '{0}' must validate the settings class '{1}'",
+		category: "AppSettings",
+		defaultSeverity: DiagnosticSeverity.Error,
+		isEnabledByDefault: true);
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
@@ -38,7 +45,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		// Get the assembly name from the compilation
 		assemblyName = compilation.Assembly.Name.Trim();
 
-		List<(string SettingsClassFullName, string? ValidatorClassFullName)> settingsClasses = [];
+		List<(string SettingsClassFullName, string? ValidatorClassFullName, string sectionName)> settingsClasses = [];
 
 		// Get the IAppSettings interface symbol to check against
 		INamedTypeSymbol? appSettingsInterfaceBase = compilation.GetTypeByMetadataName(fullInterfaceBase);
@@ -48,12 +55,16 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
+		// Get the IAppSettings`1 interface symbol to check against
 		INamedTypeSymbol? appSettingsInterface = compilation.GetTypeByMetadataName(fullInterface);
 
 		if (appSettingsInterface is null)
 		{
 			return;
 		}
+
+		// Get the IValidator`1 interface symbol to check against
+		INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
 
 		foreach (TypeDeclarationSyntax? typeDeclaration in types)
 		{
@@ -70,20 +81,51 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 				continue;
 			}
 
-			// Check if the type implements IAppSettings<T>
+			// Check if the type implements IAppSettings or IAppSettings<T>
 			foreach (INamedTypeSymbol interfaceType in typeSymbol.AllInterfaces)
 			{
+				// If the class doesn't implement either IAppSettings or IAppSettings<T>, skip it
+				if (!(SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterface) && interfaceType.TypeArguments.Length == 1) &&
+					!SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterfaceBase))
+				{
+					continue;
+				}
+
+				// Validate and extract the validation type, ensure the validator is for the correct type for the AppSettings class
+				string? validatorClass = null;
 				if (SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterface) && interfaceType.TypeArguments.Length == 1)
 				{
 					ITypeSymbol validatorType = interfaceType.TypeArguments[0];
-					settingsClasses.Add((typeSymbol.ToDisplayString(), validatorType.ToDisplayString()));
-					break;
+
+					// Check if validator is actually for this type
+					bool isValidValidator = false;
+
+					// Check if it's a named type that we can examine
+					if (validatorType is INamedTypeSymbol namedValidatorType && iValidatorBase is not null)
+					{
+						isValidValidator = namedValidatorType.AllInterfaces.Any(validatorInterface =>
+							SymbolEqualityComparer.Default.Equals(validatorInterface.OriginalDefinition, iValidatorBase) &&
+							validatorInterface.TypeArguments.Length == 1 &&
+							SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol));
+					}
+
+					if (isValidValidator)
+					{
+						validatorClass = validatorType.ToDisplayString();
+					}
+					else
+					{
+						context.ReportDiagnostic(Diagnostic.Create(
+							diagnosticDescriptorValidatorWrongType,
+							typeDeclaration.GetLocation(),
+							validatorType.Name,
+							typeSymbol.Name));
+
+						continue;
+					}
 				}
-				else if (SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterfaceBase))
-				{
-					settingsClasses.Add((typeSymbol.ToDisplayString(), null));
-					break;
-				}
+
+				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol, typeDeclaration)));
 			}
 		}
 
@@ -92,7 +134,6 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
-		// Check if IHostApplicationBuilder is available
 		bool hasIHostApplicationBuilder = compilation.GetTypeByMetadataName("Microsoft.Extensions.Hosting.IHostApplicationBuilder") is not null;
 		bool hasMauiAppBuilder = compilation.GetTypeByMetadataName("Microsoft.Maui.Hosting.MauiAppBuilder") is not null;
 
@@ -100,7 +141,47 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		context.AddSource("AppSettingsConfiguration.g.cs", SourceText.From(source, Encoding.UTF8));
 	}
 
-	static string GenerateAppSettingsConfigurationClass(List<(string SettingsClassName, string? ValidatorClassName)> settingsClasses, bool hasIHostApplicationBuilder, bool hasMauiAppBuilder)
+	static string GetSectionName(INamedTypeSymbol namedTypeSymbol, TypeDeclarationSyntax typeDeclarationSyntax)
+	{
+		string sectionName = namedTypeSymbol.Name;
+
+		foreach (ISymbol member in namedTypeSymbol.GetMembers("SectionName"))
+		{
+			if (member is IPropertySymbol propertySymbol && propertySymbol.IsStatic &&
+				propertySymbol.Type.SpecialType == SpecialType.System_String)
+			{
+				// Find the declaration node for this property
+				PropertyDeclarationSyntax? declarationSyntax = typeDeclarationSyntax.DescendantNodes()
+					.OfType<PropertyDeclarationSyntax>()
+					.FirstOrDefault(p => p.Identifier.Text == "SectionName");
+
+				if (declarationSyntax?.ExpressionBody != null)
+				{
+					// Handle expression-bodied property: static string SectionName => "Value"
+					LiteralExpressionSyntax? literalExpr = declarationSyntax.ExpressionBody.Expression as LiteralExpressionSyntax;
+					if (literalExpr?.Token.ValueText is string literalValue)
+					{
+						sectionName = literalValue;
+					}
+				}
+				else if (declarationSyntax?.Initializer != null)
+				{
+					// Handle property with initializer: static string SectionName { get; } = "Value"
+					LiteralExpressionSyntax? literalExpr = declarationSyntax.Initializer.Value as LiteralExpressionSyntax;
+					if (literalExpr?.Token.ValueText is string literalValue)
+					{
+						sectionName = literalValue;
+					}
+				}
+
+				break;
+			}
+		}
+
+		return sectionName;
+	}
+
+	static string GenerateAppSettingsConfigurationClass(List<(string SettingsClassName, string? ValidatorClassName, string sectionName)> settingsClasses, bool hasIHostApplicationBuilder, bool hasMauiAppBuilder)
 	{
 		StringBuilder builder = new();
 
@@ -112,6 +193,10 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 // ---------------
 
 using IeuanWalker.AppSettings;
+using FluentValidation;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace ").Append(assemblyName).Append(@";
 
@@ -120,22 +205,30 @@ public static class AppSettingsConfiguration
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddAppSettingsFrom").Append(assemblyName?.Sanitize(string.Empty) ?? "Assembly").Append(@"(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration)
 	{
 ");
-		foreach ((string settingsClass, string? validatorClass) in settingsClasses)
+		foreach ((string settingsClass, string? validatorClass, string sectionName) in settingsClasses)
 		{
 			if (validatorClass is null)
 			{
-				builder.AppendLine($"\t\tservices.AddAppSettings<global::{settingsClass}>(configuration);");
+				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>()");
+				builder.AppendLine($"\t\t\t.Configure(options => configuration.GetSection(\"{sectionName}\").Bind(options))");
+				builder.AppendLine($"\t\t\t.ValidateDataAnnotations()");
+				builder.AppendLine($"\t\t\t.ValidateOnStart();");
 
 			}
 			else
 			{
-				builder.AppendLine($"\t\tservices.AddAppSettings<global::{settingsClass}, global::{validatorClass}>(configuration);");
+				builder.AppendLine($"\t\tservices.AddScoped<IValidator<global::{settingsClass}>, global::{validatorClass}>();");
+				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>()");
+				builder.AppendLine($"\t\t\t.Configure(options => configuration.GetSection(\"{sectionName}\").Bind(options))");
+				builder.AppendLine($"\t\t\t.ValidateFluentValidation()");
+				builder.AppendLine($"\t\t\t.ValidateOnStart();");
 			}
+
+			builder.AppendLine();
 		}
 
-		builder.Append(@"  
-		return services;
-	}");
+		builder.AppendLine("\t\treturn services;");
+		builder.AppendLine("\t}");
 
 		// Only add the IHostApplicationBuilder extension if it's available
 		if (hasIHostApplicationBuilder)

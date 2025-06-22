@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace IeuanWalker.AppSettings;
 
-static class OptionsBuilderFluentValidationExtensions
+public static class OptionsBuilderFluentValidationExtensions
 {
 	public static OptionsBuilder<TOptions> ValidateFluentValidation<TOptions>(this OptionsBuilder<TOptions> optionsBuilder) where TOptions : class
 	{

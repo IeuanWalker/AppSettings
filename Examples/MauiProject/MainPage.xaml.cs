@@ -1,6 +1,4 @@
-﻿using System.Text;
-using Microsoft.Extensions.Options;
-using MuaiProject;
+﻿using Microsoft.Extensions.Options;
 
 namespace MauiProject;
 
@@ -10,22 +8,35 @@ public partial class MainPage : ContentPage
 	{
 		InitializeComponent();
 
-		IOptions<ConfirmationEmailSettings>? confirmationEmailSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<ConfirmationEmailSettings>>();
-		IOptions<ConfirmationEmailSettings1>? confirmationEmailSettings1 = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<ConfirmationEmailSettings1>>();
-		IOptions<ClosureEmailSettings>? closureEmailSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<ClosureEmailSettings>>();
+		IOptions<DataAnnotationWithNoValidationOrSectionNameSettings> _dataAnnotationWithNoValidationOrSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<DataAnnotationWithNoValidationOrSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<DataAnnotationWithNoValidationButWithSectionNameSettings> _dataAnnotationWithNoValidationButWithSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<DataAnnotationWithNoValidationButWithSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<DataAnnotationWithValidationButNoSectionNameSettings> _dataAnnotationWithValidationButNoSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<DataAnnotationWithValidationButNoSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<DataAnnotationWithValidationAndSectionNameSettings> _dataAnnotationWithValidationAndSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<DataAnnotationWithValidationAndSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<DataAnnotationNestedSettings> _dataAnnotationNestedSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<DataAnnotationNestedSettings>>() ?? throw new NullReferenceException();
 
-
-		StringBuilder sb = new();
-
-		sb.AppendLine("Subject from ConfirmationEmailSettings: ").Append(confirmationEmailSettings?.Value.Subject);
-		sb.AppendLine(Environment.NewLine);
-		sb.AppendLine("Subject from ConfirmationEmailSettings1: ").Append(confirmationEmailSettings1?.Value.Subject);
-		sb.AppendLine(Environment.NewLine);
-		sb.AppendLine("Subject from ClosureEmailSettings: ").Append(closureEmailSettings?.Value.Subject);
+		IOptions<FluentValidationWithNoValidationOrSectionNameSettings> _fluentValidationWithNoValidationOrSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithNoValidationOrSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<FluentValidationWithNoValidationButWithSectionNameSettings> _fluentValidationWithNoValidationButWithSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithNoValidationButWithSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<FluentValidationWithValidationButNoSectionNameSettings> _fluentValidationWithValidationButNoSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithValidationButNoSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<FluentValidationWithValidationAndSectionNameSettings> _fluentValidationWithValidationAndSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithValidationAndSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<FluentValidationNestedSettings> _fluentValidationNestedSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationNestedSettings>>() ?? throw new NullReferenceException();
 
 		Content = new Label()
 		{
-			Text = sb.ToString(),
+			Text = $"""
+   DataAnnotation
+   Text from DataAnnotationWithNoValidationOrSectionNameSettings: {_dataAnnotationWithNoValidationOrSectionNameSettings.Value.Text}
+   Text from DataAnnotationWithNoValidationButWithSectionNameSettings: {_dataAnnotationWithNoValidationButWithSectionNameSettings.Value.Text}
+   Text from DataAnnotationWithValidationButNoSectionNameSettings: {_dataAnnotationWithValidationButNoSectionNameSettings.Value.Text}
+   Text from DataAnnotationWithValidationAndSectionNameSettings: {_dataAnnotationWithValidationAndSectionNameSettings.Value.Text}
+   Text from DataAnnotationNestedSettings: {_dataAnnotationNestedSettings.Value.Text}
+
+   FluentValidation
+   Text from FluentValidationWithNoValidationOrSectionNameSettings: {_fluentValidationWithNoValidationOrSectionNameSettings.Value.Text}
+   Text from FluentValidationWithNoValidationButWithSectionNameSettings: {_fluentValidationWithNoValidationButWithSectionNameSettings.Value.Text}
+   Text from FluentValidationWithValidationButNoSectionNameSettings: {_fluentValidationWithValidationButNoSectionNameSettings.Value.Text}
+   Text from FluentValidationWithValidationAndSectionNameSettings: {_fluentValidationWithValidationAndSectionNameSettings.Value.Text}
+   Text from FluentValidationNestedSettings: {_fluentValidationNestedSettings.Value.Text}
+   """
 		};
 	}
 }

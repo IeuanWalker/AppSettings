@@ -92,24 +92,19 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					// Check if it's a named type that we can examine
 					if (validatorType is INamedTypeSymbol namedValidatorType)
 					{
-						// Check base class (AbstractValidator<T>)
-						if (namedValidatorType.BaseType?.IsGenericType == true &&
-								namedValidatorType.BaseType.TypeArguments.Length == 1 &&
-								SymbolEqualityComparer.Default.Equals(namedValidatorType.BaseType.TypeArguments[0], typeSymbol))
-						{
-							isValidValidator = true;
-						}
+						INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
 
-						// Check interfaces (IValidator<T>)
-						foreach (INamedTypeSymbol validatorInterface in namedValidatorType.AllInterfaces)
+						if (iValidatorBase is not null)
 						{
-							if (validatorInterface.IsGenericType &&
-								validatorInterface.Name == "IValidator" &&
-								validatorInterface.TypeArguments.Length == 1 &&
-								SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol))
+							foreach (INamedTypeSymbol validatorInterface in namedValidatorType.AllInterfaces)
 							{
-								isValidValidator = true;
-								break;
+								if (SymbolEqualityComparer.Default.Equals(validatorInterface.OriginalDefinition, iValidatorBase) &&
+									validatorInterface.TypeArguments.Length == 1 &&
+									SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol))
+								{
+									isValidValidator = true;
+									break;
+								}
 							}
 						}
 					}

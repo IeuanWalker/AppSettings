@@ -15,7 +15,7 @@ public partial class MainPage : ContentPage
 		IOptions<DataAnnotationWithValidationAndSectionNameSettings> _dataAnnotationWithValidationAndSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<DataAnnotationWithValidationAndSectionNameSettings>>() ?? throw new NullReferenceException();
 		IOptions<DataAnnotationNestedSettings> _dataAnnotationNestedSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<DataAnnotationNestedSettings>>() ?? throw new NullReferenceException();
 
-		IOptions<FluentValidationWithNoValidationOrSectionNameSettings> _flentValidationWithNoValidationOrSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithNoValidationOrSectionNameSettings>>() ?? throw new NullReferenceException();
+		IOptions<FluentValidationWithNoValidationOrSectionNameSettings> _fluentValidationWithNoValidationOrSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithNoValidationOrSectionNameSettings>>() ?? throw new NullReferenceException();
 		IOptions<FluentValidationWithNoValidationButWithSectionNameSettings> _fluentValidationWithNoValidationButWithSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithNoValidationButWithSectionNameSettings>>() ?? throw new NullReferenceException();
 		IOptions<FluentValidationWithValidationButNoSectionNameSettings> _fluentValidationWithValidationButNoSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithValidationButNoSectionNameSettings>>() ?? throw new NullReferenceException();
 		IOptions<FluentValidationWithValidationAndSectionNameSettings> _fluentValidationWithValidationAndSectionNameSettings = Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext?.Services.GetRequiredService<IOptions<FluentValidationWithValidationAndSectionNameSettings>>() ?? throw new NullReferenceException();
@@ -32,7 +32,7 @@ public partial class MainPage : ContentPage
    Text from DataAnnotationNestedSettings: {_dataAnnotationNestedSettings.Value.Text}
 
    FluentValidation
-   Text from FluentValidationWithNoValidationOrSectionNameSettings: {_flentValidationWithNoValidationOrSectionNameSettings.Value.Text}
+   Text from FluentValidationWithNoValidationOrSectionNameSettings: {_fluentValidationWithNoValidationOrSectionNameSettings.Value.Text}
    Text from FluentValidationWithNoValidationButWithSectionNameSettings: {_fluentValidationWithNoValidationButWithSectionNameSettings.Value.Text}
    Text from FluentValidationWithValidationButNoSectionNameSettings: {_fluentValidationWithValidationButNoSectionNameSettings.Value.Text}
    Text from FluentValidationWithValidationAndSectionNameSettings: {_fluentValidationWithValidationAndSectionNameSettings.Value.Text}

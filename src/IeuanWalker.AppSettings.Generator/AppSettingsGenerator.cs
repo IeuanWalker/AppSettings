@@ -73,10 +73,62 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			// Check if the type implements IAppSettings<T>
 			foreach (INamedTypeSymbol interfaceType in typeSymbol.AllInterfaces)
 			{
+
+
 				if (SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterface) && interfaceType.TypeArguments.Length == 1)
 				{
 					ITypeSymbol validatorType = interfaceType.TypeArguments[0];
-					settingsClasses.Add((typeSymbol.ToDisplayString(), validatorType.ToDisplayString()));
+
+					// Check if validator is actually for this type
+					bool isValidValidator = false;
+
+					// Check if it's a named type that we can examine
+					if (validatorType is INamedTypeSymbol namedValidatorType)
+					{
+						// Check base class (AbstractValidator<T>)
+						if (namedValidatorType.BaseType != null)
+						{
+							if (namedValidatorType.BaseType.IsGenericType &&
+								namedValidatorType.BaseType.TypeArguments.Length == 1 &&
+								SymbolEqualityComparer.Default.Equals(namedValidatorType.BaseType.TypeArguments[0], typeSymbol))
+							{
+								isValidValidator = true;
+							}
+						}
+
+						// Check interfaces (IValidator<T>)
+						foreach (var iface in namedValidatorType.AllInterfaces)
+						{
+							if (iface.IsGenericType &&
+								iface.Name == "IValidator" &&
+								iface.TypeArguments.Length == 1 &&
+								SymbolEqualityComparer.Default.Equals(iface.TypeArguments[0], typeSymbol))
+							{
+								isValidValidator = true;
+								break;
+							}
+						}
+					}
+
+					if (isValidValidator)
+					{
+						settingsClasses.Add((typeSymbol.ToDisplayString(), validatorType.ToDisplayString()));
+					}
+					else
+					{
+						// Report diagnostic that validator is not for the correct type
+						context.ReportDiagnostic(Diagnostic.Create(
+							new DiagnosticDescriptor(
+								id: "APPSET001",
+								title: "Invalid validator type",
+								messageFormat: "The validator type '{0}' must validate the settings class '{1}'",
+								category: "AppSettings",
+								defaultSeverity: DiagnosticSeverity.Error,
+								isEnabledByDefault: true),
+							typeDeclaration.GetLocation(),
+							validatorType.Name,
+							typeSymbol.Name));
+					}
 					break;
 				}
 				else if (SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterfaceBase))
@@ -112,6 +164,11 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 // ---------------
 
 using IeuanWalker.AppSettings;
+using FluentValidation;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
 
 namespace ").Append(assemblyName).Append(@";
 
@@ -124,12 +181,17 @@ public static class AppSettingsConfiguration
 		{
 			if (validatorClass is null)
 			{
-				builder.AppendLine($"\t\tservices.AddAppSettings<global::{settingsClass}>(configuration);");
-
+				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>().Configure(options => configuration.GetSection(global::{settingsClass}.SectionName ?? typeof(global::{settingsClass}).Name).Bind(options));");
+				builder.AppendLine();
 			}
 			else
 			{
-				builder.AppendLine($"\t\tservices.AddAppSettings<global::{settingsClass}, global::{validatorClass}>(configuration);");
+				builder.AppendLine($"\t\tservices.AddScoped<global::IValidator<global::{settingsClass}>, global::{validatorClass}>();");
+				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>()");
+				builder.AppendLine($"\t\t\t.Configure(options => configuration.GetSection(global::{settingsClass}.SectionName ?? typeof(global::{settingsClass}).Name).Bind(options))");
+				builder.AppendLine($"\t\t\t.ValidateFluentValidation()");
+				builder.AppendLine($"\t\t\t.ValidateOnStart();");
+				builder.AppendLine();
 			}
 		}
 

@@ -1,10 +1,15 @@
 namespace IeuanWalker.AppSettings;
 
 /// <summary>
-/// Specify the appsettings section if it is different from the class name
+/// Use this attribute when the configuration section name differs from the class name.
 /// </summary>
 /// <param name="sectionName">The name of the section</param>
-/// <example>[SectionName("Section:ChildSection"]</example>
+/// <remarks>
+/// <para>
+/// Supports hierarchical paths using the colon separator.
+/// </para>
+/// [SectionName("Section:ChildSection")]
+/// </remarks>
 [AttributeUsage(AttributeTargets.Class)]
 public class SectionNameAttribute(string sectionName) : Attribute
 {

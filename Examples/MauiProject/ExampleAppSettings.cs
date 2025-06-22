@@ -4,7 +4,7 @@ using IeuanWalker.AppSettings;
 
 namespace MuaiProject;
 
-#region DataAnotations
+#region DataAnnotations
 
 public class DataAnnotationWithNoValidationOrSectionNameSettings : IAppSettings
 {

@@ -4,7 +4,7 @@ using IeuanWalker.AppSettings;
 
 namespace ConsoleProject;
 
-#region DataAnotations
+#region DataAnnotations
 
 public class DataAnnotationWithNoValidationOrSectionNameSettings : IAppSettings
 {

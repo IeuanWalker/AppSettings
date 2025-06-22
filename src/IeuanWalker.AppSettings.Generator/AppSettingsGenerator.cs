@@ -103,16 +103,10 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					// Check if it's a named type that we can examine
 					if (validatorType is INamedTypeSymbol namedValidatorType && iValidatorBase is not null)
 					{
-						foreach (INamedTypeSymbol validatorInterface in namedValidatorType.AllInterfaces)
-						{
-							if (SymbolEqualityComparer.Default.Equals(validatorInterface.OriginalDefinition, iValidatorBase) &&
-								validatorInterface.TypeArguments.Length == 1 &&
-								SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol))
-							{
-								isValidValidator = true;
-								break;
-							}
-						}
+						isValidValidator = namedValidatorType.AllInterfaces.Any(validatorInterface =>
+							SymbolEqualityComparer.Default.Equals(validatorInterface.OriginalDefinition, iValidatorBase) &&
+							validatorInterface.TypeArguments.Length == 1 &&
+							SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol));
 					}
 
 					if (isValidValidator)

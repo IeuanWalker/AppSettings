@@ -2,7 +2,7 @@
 using FluentValidation;
 using IeuanWalker.AppSettings;
 
-namespace MuaiProject;
+namespace MauiProject;
 
 #region DataAnnotations
 

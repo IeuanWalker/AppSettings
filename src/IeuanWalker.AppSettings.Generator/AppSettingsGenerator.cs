@@ -80,7 +80,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					continue;
 				}
 
-				// Validate and extract the validation type, ensure the validator is for the correct type the for the AppSettings class
+				// Validate and extract the validation type, ensure the validator is for the correct type for the AppSettings class
 				string? validatorClass = null;
 				if (SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterface) && interfaceType.TypeArguments.Length == 1)
 				{

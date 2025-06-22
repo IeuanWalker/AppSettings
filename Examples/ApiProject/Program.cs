@@ -41,6 +41,7 @@ app.MapGet("/test", (
 	Text from FluentValidationWithNoValidationOrSectionNameSettings: {fluentValidationWithNoValidationOrSectionNameSettings.Value.Text}
 	Text from FluentValidationWithNoValidationButWithSectionNameSettings: {fluentValidationWithNoValidationButWithSectionNameSettings.Value.Text}
 	Text from FluentValidationWithValidationButNoSectionNameSettings: {fluentValidationWithValidationButNoSectionNameSettings.Value.Text}
+	Text from FluentValidationWithValidationAndSectionNameSettings: {fluentValidationWithValidationAndSectionNameSettings.Value.Text}
 	Text from FluentValidationNestedSettings: {fluentValidationNestedSettings.Value.Text}
 		
 	Class Library

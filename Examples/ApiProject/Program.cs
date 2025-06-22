@@ -30,17 +30,20 @@ app.MapGet("/test", (
 	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting) =>
 {
 	return $"""
+	DataAnnotation
 	Text from DataAnnotationWithNoValidationOrSectionNameSettings: {dataAnnotationWithNoValidationOrSectionNameSettings.Value.Text}
 	Text from DataAnnotationWithNoValidationButWithSectionNameSettings: {dataAnnotationWithNoValidationButWithSectionNameSettings.Value.Text}
 	Text from DataAnnotationWithValidationButNoSectionNameSettings: {dataAnnotationWithValidationButNoSectionNameSettings.Value.Text}
 	Text from DataAnnotationWithValidationAndSectionNameSettings: {dataAnnotationWithValidationAndSectionNameSettings.Value.Text}
 	Text from DataAnnotationNestedSettings: {dataAnnotationNestedSettings.Value.Text}
 		
+	FluentValidation
 	Text from FluentValidationWithNoValidationOrSectionNameSettings: {fluentValidationWithNoValidationOrSectionNameSettings.Value.Text}
 	Text from FluentValidationWithNoValidationButWithSectionNameSettings: {fluentValidationWithNoValidationButWithSectionNameSettings.Value.Text}
 	Text from FluentValidationWithValidationButNoSectionNameSettings: {fluentValidationWithValidationButNoSectionNameSettings.Value.Text}
 	Text from FluentValidationNestedSettings: {fluentValidationNestedSettings.Value.Text}
-			
+		
+	Class Library
 	Text from NestedClassLibraryAppSetting: {nestedClassLibraryAppSetting.Value.Test}
 	""";
 });

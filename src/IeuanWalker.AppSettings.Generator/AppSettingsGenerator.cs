@@ -14,6 +14,13 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 	const string fullInterfaceBase = "IeuanWalker.AppSettings.IAppSettings";
 	const string fullInterface = "IeuanWalker.AppSettings.IAppSettings`1";
 	static string? assemblyName;
+	static readonly DiagnosticDescriptor diagnosticDescriptorValidatorWrongType = new(
+		id: "APPSET001",
+		title: "Invalid validator type",
+		messageFormat: "The validator type '{0}' must validate the settings class '{1}'",
+		category: "AppSettings",
+		defaultSeverity: DiagnosticSeverity.Error,
+		isEnabledByDefault: true);
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
@@ -48,12 +55,16 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
+		// Get the IAppSettings`1 interface symbol to check against
 		INamedTypeSymbol? appSettingsInterface = compilation.GetTypeByMetadataName(fullInterface);
 
 		if (appSettingsInterface is null)
 		{
 			return;
 		}
+
+		// Get the IValidator`1 interface symbol to check against
+		INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
 
 		foreach (TypeDeclarationSyntax? typeDeclaration in types)
 		{
@@ -70,7 +81,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 				continue;
 			}
 
-			// Check if the type implements IAppSettings<T>
+			// Check if the type implements IAppSettings or IAppSettings<T>
 			foreach (INamedTypeSymbol interfaceType in typeSymbol.AllInterfaces)
 			{
 				// If the class doesn't implement either IAppSettings or IAppSettings<T>, skip it
@@ -80,11 +91,38 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					continue;
 				}
 
+				// Validate and extract the validation type, ensure the validator is for the correct type for the AppSettings class
 				string? validatorClass = null;
 				if (SymbolEqualityComparer.Default.Equals(interfaceType.OriginalDefinition, appSettingsInterface) && interfaceType.TypeArguments.Length == 1)
 				{
 					ITypeSymbol validatorType = interfaceType.TypeArguments[0];
-					validatorClass = validatorType.ToDisplayString();
+
+					// Check if validator is actually for this type
+					bool isValidValidator = false;
+
+					// Check if it's a named type that we can examine
+					if (validatorType is INamedTypeSymbol namedValidatorType && iValidatorBase is not null)
+					{
+						isValidValidator = namedValidatorType.AllInterfaces.Any(validatorInterface =>
+							SymbolEqualityComparer.Default.Equals(validatorInterface.OriginalDefinition, iValidatorBase) &&
+							validatorInterface.TypeArguments.Length == 1 &&
+							SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol));
+					}
+
+					if (isValidValidator)
+					{
+						validatorClass = validatorType.ToDisplayString();
+					}
+					else
+					{
+						context.ReportDiagnostic(Diagnostic.Create(
+							diagnosticDescriptorValidatorWrongType,
+							typeDeclaration.GetLocation(),
+							validatorType.Name,
+							typeSymbol.Name));
+
+						continue;
+					}
 				}
 
 				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol, typeDeclaration)));
@@ -96,7 +134,6 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
-		// Check if IHostApplicationBuilder is available
 		bool hasIHostApplicationBuilder = compilation.GetTypeByMetadataName("Microsoft.Extensions.Hosting.IHostApplicationBuilder") is not null;
 		bool hasMauiAppBuilder = compilation.GetTypeByMetadataName("Microsoft.Maui.Hosting.MauiAppBuilder") is not null;
 
@@ -106,7 +143,6 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 
 	static string GetSectionName(INamedTypeSymbol namedTypeSymbol, TypeDeclarationSyntax typeDeclarationSyntax)
 	{
-		// Extract SectionName if available
 		string sectionName = namedTypeSymbol.Name;
 
 		foreach (ISymbol member in namedTypeSymbol.GetMembers("SectionName"))

@@ -1,7 +1,5 @@
 using BlazorProject;
 using BlazorProject.Components;
-using FluentValidation;
-using IeuanWalker.AppSettings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,29 +8,6 @@ builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 
 builder.AddAppSettingsFromBlazorProject();
-
-
-
-
-
-
-builder.Services.AddOptions<global::BlazorProject.ConfirmationEmailSettings>().Configure(options => builder.Configuration.GetSection(global::BlazorProject.ConfirmationEmailSettings.SectionName ?? typeof(global::BlazorProject.ConfirmationEmailSettings).Name).Bind(options));
-
-builder.Services.AddOptions<global::BlazorProject.ConfirmationEmailSettings1>().Configure(options => builder.Configuration.GetSection(global::BlazorProject.ConfirmationEmailSettings1.SectionName ?? typeof(global::BlazorProject.ConfirmationEmailSettings1).Name).Bind(options));
-
-builder.Services.AddScoped<IValidator<global::BlazorProject.ClosureEmailSettings>, global::BlazorProject.ClosureEmailSettingsValidator>();
-builder.Services.AddOptions<global::BlazorProject.ClosureEmailSettings>()
-	.Configure(options => builder.Configuration.GetSection(global::BlazorProject.ClosureEmailSettings.SectionName ?? typeof(global::BlazorProject.ClosureEmailSettings).Name).Bind(options))
-	.ValidateFluentValidation()
-	.ValidateOnStart();
-
-
-
-
-
-
-
-
 
 var app = builder.Build();
 

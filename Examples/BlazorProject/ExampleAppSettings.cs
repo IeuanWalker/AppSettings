@@ -74,9 +74,9 @@ sealed class FluentValidationWithValidationAndSectionNameSettingValidator : Abst
 {
 	public FluentValidationWithValidationAndSectionNameSettingValidator()
 	{
-		// RuleFor(x => x.Text)
-		// 	.NotEmpty()
-		// 	.MinimumLength(5);
+		RuleFor(x => x.Text)
+			.NotEmpty()
+			.MinimumLength(5);
 	}
 }
 
@@ -90,9 +90,9 @@ sealed class FluentValidationNestedSettingsValidator : AbstractValidator<FluentV
 {
 	public FluentValidationNestedSettingsValidator()
 	{
-		// RuleFor(x => x.Text)
-		// 	.NotEmpty()
-		// 	.MinimumLength(5);
+		RuleFor(x => x.Text)
+			.NotEmpty()
+			.MinimumLength(5);
 	}
 }
 #endregion

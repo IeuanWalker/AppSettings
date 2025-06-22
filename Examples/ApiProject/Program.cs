@@ -27,26 +27,25 @@ app.MapGet("/test", (
 	IOptions<FluentValidationWithValidationButNoSectionNameSettings> fluentValidationWithValidationButNoSectionNameSettings,
 	IOptions<FluentValidationWithValidationAndSectionNameSettings> fluentValidationWithValidationAndSectionNameSettings,
 	IOptions<FluentValidationNestedSettings> fluentValidationNestedSettings,
-	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting,
-	IOptions<NestedClassLibraryAppSettingFromAttribute> nestedClassLibraryAppSettingFromAttribute) =>
+	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting) =>
 {
-	return $$$"""
+	return $"""
 	DataAnnotation
-	Text from DataAnnotationWithNoValidationOrSectionNameSettings: {{{dataAnnotationWithNoValidationOrSectionNameSettings.Value.Text}}}
-	Text from DataAnnotationWithNoValidationButWithSectionNameSettings: {{{dataAnnotationWithNoValidationButWithSectionNameSettings.Value.Text}}}
-	Text from DataAnnotationWithValidationButNoSectionNameSettings: {{{dataAnnotationWithValidationButNoSectionNameSettings.Value.Text}}}
-	Text from DataAnnotationWithValidationAndSectionNameSettings: {{{dataAnnotationWithValidationAndSectionNameSettings.Value.Text}}}
-	Text from DataAnnotationNestedSettings: {{{dataAnnotationNestedSettings.Value.Text}}}
+	Text from DataAnnotationWithNoValidationOrSectionNameSettings: {dataAnnotationWithNoValidationOrSectionNameSettings.Value.Text}
+	Text from DataAnnotationWithNoValidationButWithSectionNameSettings: {dataAnnotationWithNoValidationButWithSectionNameSettings.Value.Text}
+	Text from DataAnnotationWithValidationButNoSectionNameSettings: {dataAnnotationWithValidationButNoSectionNameSettings.Value.Text}
+	Text from DataAnnotationWithValidationAndSectionNameSettings: {dataAnnotationWithValidationAndSectionNameSettings.Value.Text}
+	Text from DataAnnotationNestedSettings: {dataAnnotationNestedSettings.Value.Text}
 		
 	FluentValidation
-	Text from FluentValidationWithNoValidationOrSectionNameSettings: {{{fluentValidationWithNoValidationOrSectionNameSettings.Value.Text}}}
-	Text from FluentValidationWithNoValidationButWithSectionNameSettings: {{{fluentValidationWithNoValidationButWithSectionNameSettings.Value.Text}}}
-	Text from FluentValidationWithValidationButNoSectionNameSettings: {{{fluentValidationWithValidationButNoSectionNameSettings.Value.Text}}}
-	Text from FluentValidationWithValidationAndSectionNameSettings: {{{fluentValidationWithValidationAndSectionNameSettings.Value.Text}}}
-	Text from FluentValidationNestedSettings: {{{fluentValidationNestedSettings.Value.Text}}}
+	Text from FluentValidationWithNoValidationOrSectionNameSettings: {fluentValidationWithNoValidationOrSectionNameSettings.Value.Text}
+	Text from FluentValidationWithNoValidationButWithSectionNameSettings: {fluentValidationWithNoValidationButWithSectionNameSettings.Value.Text}
+	Text from FluentValidationWithValidationButNoSectionNameSettings: {fluentValidationWithValidationButNoSectionNameSettings.Value.Text}
+	Text from FluentValidationWithValidationAndSectionNameSettings: {fluentValidationWithValidationAndSectionNameSettings.Value.Text}
+	Text from FluentValidationNestedSettings: {fluentValidationNestedSettings.Value.Text}
 		
 	Class Library
-	Text from NestedClassLibraryAppSetting: {{{nestedClassLibraryAppSetting.Value.Test}}}
+	Text from NestedClassLibraryAppSetting: {nestedClassLibraryAppSetting.Value.Test}
 	""";
 });
 

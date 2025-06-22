@@ -62,6 +62,8 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			return;
 		}
 
+		INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
+
 		foreach (TypeDeclarationSyntax? typeDeclaration in types)
 		{
 			if (typeDeclaration is null)
@@ -97,21 +99,16 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					bool isValidValidator = false;
 
 					// Check if it's a named type that we can examine
-					if (validatorType is INamedTypeSymbol namedValidatorType)
+					if (validatorType is INamedTypeSymbol namedValidatorType && iValidatorBase is not null)
 					{
-						INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
-
-						if (iValidatorBase is not null)
+						foreach (INamedTypeSymbol validatorInterface in namedValidatorType.AllInterfaces)
 						{
-							foreach (INamedTypeSymbol validatorInterface in namedValidatorType.AllInterfaces)
+							if (SymbolEqualityComparer.Default.Equals(validatorInterface.OriginalDefinition, iValidatorBase) &&
+								validatorInterface.TypeArguments.Length == 1 &&
+								SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol))
 							{
-								if (SymbolEqualityComparer.Default.Equals(validatorInterface.OriginalDefinition, iValidatorBase) &&
-									validatorInterface.TypeArguments.Length == 1 &&
-									SymbolEqualityComparer.Default.Equals(validatorInterface.TypeArguments[0], typeSymbol))
-								{
-									isValidValidator = true;
-									break;
-								}
+								isValidValidator = true;
+								break;
 							}
 						}
 					}

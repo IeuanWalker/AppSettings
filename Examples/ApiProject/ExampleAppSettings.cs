@@ -7,7 +7,7 @@ public class ConfirmationEmailSettings : IAppSettings
 {
 	public required string Subject { get; set; }
 }
-public class ConfirmationEmailSettings1
+public class ConfirmationEmailSettings1 : IAppSettings
 {
 	public static string? SectionName => "ConfirmationEmail";
 	public required string Subject { get; set; }

@@ -28,7 +28,6 @@ IOptions<FluentValidationWithValidationButNoSectionNameSettings> _fluentValidati
 IOptions<FluentValidationWithValidationAndSectionNameSettings> _fluentValidationWithValidationAndSectionNameSettings = serviceProvider.GetService<IOptions<FluentValidationWithValidationAndSectionNameSettings>>() ?? throw new NullReferenceException();
 IOptions<FluentValidationNestedSettings> _fluentValidationNestedSettings = serviceProvider.GetService<IOptions<FluentValidationNestedSettings>>() ?? throw new NullReferenceException();
 
-
 Console.WriteLine($"""
 DataAnnotation
 Text from DataAnnotationWithNoValidationOrSectionNameSettings: {_dataAnnotationWithNoValidationOrSectionNameSettings.Value.Text}

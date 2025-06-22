@@ -10,9 +10,9 @@ public class DataAnnotationWithNoValidationOrSectionNameSettings : IAppSettings
 {
 	public required string Text { get; set; }
 }
+[SectionName("DataAnnotationWithNoValidationButWithSectionName")]
 public class DataAnnotationWithNoValidationButWithSectionNameSettings : IAppSettings
 {
-	public static string? SectionName => "DataAnnotationWithNoValidationButWithSectionName";
 	public required string Text { get; set; }
 }
 public class DataAnnotationWithValidationButNoSectionNameSettings : IAppSettings
@@ -21,16 +21,16 @@ public class DataAnnotationWithValidationButNoSectionNameSettings : IAppSettings
 	public required string Text { get; set; }
 }
 
+[SectionName("DataAnnotationWithValidationAndSectionName")]
 public class DataAnnotationWithValidationAndSectionNameSettings : IAppSettings
 {
-	public static string? SectionName => "DataAnnotationWithValidationAndSectionName";
 	[MinLength(5)]
 	public required string Text { get; set; }
 }
 
+[SectionName("DataAnnotationNestedSettings:Settings")]
 public class DataAnnotationNestedSettings : IAppSettings
 {
-	public static string? SectionName => "DataAnnotationNestedSettings:Settings";
 	[MinLength(5)]
 	public required string Text { get; set; }
 }
@@ -43,9 +43,10 @@ public class FluentValidationWithNoValidationOrSectionNameSettings : IAppSetting
 {
 	public required string Text { get; set; }
 }
+
+[SectionName("FluentValidationWithNoValidationButWithSectionName")]
 public class FluentValidationWithNoValidationButWithSectionNameSettings : IAppSettings
 {
-	public static string? SectionName => "FluentValidationWithNoValidationButWithSectionName";
 	public required string Text { get; set; }
 }
 public class FluentValidationWithValidationButNoSectionNameSettings : IAppSettings<FluentValidationWithValidationButNoSectionNameSettingsValidator>
@@ -63,9 +64,9 @@ sealed class FluentValidationWithValidationButNoSectionNameSettingsValidator : A
 	}
 }
 
+[SectionName("FluentValidationWithValidationAndSectionName")]
 public class FluentValidationWithValidationAndSectionNameSettings : IAppSettings<FluentValidationWithValidationAndSectionNameSettingValidator>
 {
-	public static string? SectionName => "FluentValidationWithValidationAndSectionName";
 	public required string Text { get; set; }
 }
 
@@ -79,9 +80,9 @@ sealed class FluentValidationWithValidationAndSectionNameSettingValidator : Abst
 	}
 }
 
+[SectionName("FluentValidationNestedSettings:Settings")]
 public class FluentValidationNestedSettings : IAppSettings<FluentValidationNestedSettingsValidator>
 {
-	public static string? SectionName => "FluentValidationNestedSettings:Settings";
 	public required string Text { get; set; }
 }
 

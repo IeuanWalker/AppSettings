@@ -13,7 +13,9 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 {
 	const string fullInterfaceBase = "IeuanWalker.AppSettings.IAppSettings";
 	const string fullInterface = "IeuanWalker.AppSettings.IAppSettings`1";
+	const string fullAttribute = "IeuanWalker.AppSettings.SectionNameAttribute";
 	static string? assemblyName;
+	static INamedTypeSymbol? attributeSymbol;
 	static readonly DiagnosticDescriptor diagnosticDescriptorValidatorWrongType = new(
 		id: "APPSET001",
 		title: "Invalid validator type",
@@ -62,6 +64,9 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		{
 			return;
 		}
+
+		// Get the SectionNameAttribute symbol to check against
+		attributeSymbol = compilation.GetTypeByMetadataName(fullAttribute);
 
 		// Get the IValidator`1 interface symbol to check against
 		INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
@@ -125,7 +130,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					}
 				}
 
-				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol, typeDeclaration)));
+				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol)));
 			}
 		}
 
@@ -141,41 +146,14 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		context.AddSource("AppSettingsConfiguration.g.cs", SourceText.From(source, Encoding.UTF8));
 	}
 
-	static string GetSectionName(INamedTypeSymbol namedTypeSymbol, TypeDeclarationSyntax typeDeclarationSyntax)
+	static string GetSectionName(INamedTypeSymbol namedTypeSymbol)
 	{
 		string sectionName = namedTypeSymbol.Name;
 
-		foreach (ISymbol member in namedTypeSymbol.GetMembers("SectionName"))
+		if (attributeSymbol is not null)
 		{
-			if (member is IPropertySymbol propertySymbol && propertySymbol.IsStatic &&
-				propertySymbol.Type.SpecialType == SpecialType.System_String)
-			{
-				// Find the declaration node for this property
-				PropertyDeclarationSyntax? declarationSyntax = typeDeclarationSyntax.DescendantNodes()
-					.OfType<PropertyDeclarationSyntax>()
-					.FirstOrDefault(p => p.Identifier.Text == "SectionName");
-
-				if (declarationSyntax?.ExpressionBody != null)
-				{
-					// Handle expression-bodied property: static string SectionName => "Value"
-					LiteralExpressionSyntax? literalExpr = declarationSyntax.ExpressionBody.Expression as LiteralExpressionSyntax;
-					if (literalExpr?.Token.ValueText is string literalValue)
-					{
-						sectionName = literalValue;
-					}
-				}
-				else if (declarationSyntax?.Initializer != null)
-				{
-					// Handle property with initializer: static string SectionName { get; } = "Value"
-					LiteralExpressionSyntax? literalExpr = declarationSyntax.Initializer.Value as LiteralExpressionSyntax;
-					if (literalExpr?.Token.ValueText is string literalValue)
-					{
-						sectionName = literalValue;
-					}
-				}
-
-				break;
-			}
+			AttributeData? sectionNameAttribute = namedTypeSymbol.GetAttributes().FirstOrDefault(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, attributeSymbol));
+			sectionName = (string?)sectionNameAttribute?.ConstructorArguments[0].Value ?? sectionName;
 		}
 
 		return sectionName;

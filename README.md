@@ -53,18 +53,18 @@ Would automatically map to the following app setting section -
 }
 ```
 
-If your model name and configuration section don't match or you want to bind a nested configuration, you can override this within your model by setting the `SectionName` property
+If your model name and configuration section don't match or you want to bind a nested configuration, you can override this within your model by using the `SectionName` attribute
 ```csharp
+[SectionName("ConfirmationEmail")]
 public class ConfirmationEmailSettings : IAppSettings
 {
-    public static string? SectionName => "ConfirmationEmail";
     public required string Subject { get; set; }
 }
 ```
 ```csharp
+[SectionName("NestedConfiguration:ConfirmationEmail")]
 public class ConfirmationEmailSettings : IAppSettings
 {
-    public static string? SectionName => "NestedConfiguration:ConfirmationEmail";
     public required string Subject { get; set; }
 }
 ```

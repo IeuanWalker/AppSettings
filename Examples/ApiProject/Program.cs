@@ -28,8 +28,6 @@ app.MapGet("/test", (
 	IOptions<FluentValidationWithValidationAndSectionNameSettings> fluentValidationWithValidationAndSectionNameSettings,
 	IOptions<FluentValidationNestedSettings> fluentValidationNestedSettings,
 	IOptions<NestedClassLibraryAppSetting> nestedClassLibraryAppSetting,
-	IOptions<ConfirmationEmailSettingsFromAttribute> confirmationEmailSettingsFromAttribute,
-	IOptions<ClosureEmailSettingsFromAttribute> closureEmailSettingsFromAttribute,
 	IOptions<NestedClassLibraryAppSettingFromAttribute> nestedClassLibraryAppSettingFromAttribute) =>
 {
 	return $$$"""
@@ -49,9 +47,6 @@ app.MapGet("/test", (
 		
 	Class Library
 	Text from NestedClassLibraryAppSetting: {{{nestedClassLibraryAppSetting.Value.Test}}}
-	
-	Subject from ClosureEmailSettingsFromAttribute: {{closureEmailSettingsFromAttribute.Value.Subject}}
-	Text from NestedClassLibraryAppSettingFromAttribute: {{nestedClassLibraryAppSettingFromAttribute.Value.Test}}
 	""";
 });
 

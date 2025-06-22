@@ -17,7 +17,4 @@ public partial class Home
 	[Inject] IOptions<FluentValidationWithValidationButNoSectionNameSettings> _fluentValidationWithValidationButNoSectionNameSettings { get; set; } = default!;
 	[Inject] IOptions<FluentValidationWithValidationAndSectionNameSettings> _fluentValidationWithValidationAndSectionNameSettings { get; set; } = default!;
 	[Inject] IOptions<FluentValidationNestedSettings> _fluentValidationNestedSettings { get; set; } = default!;
-	
-	[Inject] IOptions<ConfirmationEmailSettingsFromAttribute> _confirmationEmailSettingsFromAttribute { get; set; } = default!;
-	[Inject] IOptions<ClosureEmailSettingsFromAttribute> _closureEmailSettingsFromAttribute { get; set; } = default!;
 }

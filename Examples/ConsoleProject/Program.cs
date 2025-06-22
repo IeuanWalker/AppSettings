@@ -28,9 +28,6 @@ IOptions<FluentValidationWithValidationButNoSectionNameSettings> _fluentValidati
 IOptions<FluentValidationWithValidationAndSectionNameSettings> _fluentValidationWithValidationAndSectionNameSettings = serviceProvider.GetService<IOptions<FluentValidationWithValidationAndSectionNameSettings>>() ?? throw new NullReferenceException();
 IOptions<FluentValidationNestedSettings> _fluentValidationNestedSettings = serviceProvider.GetService<IOptions<FluentValidationNestedSettings>>() ?? throw new NullReferenceException();
 
-IOptions<ConfirmationEmailSettingsFromAttribute> confirmationEmailSettingsFromAttribute = serviceProvider.GetService<IOptions<ConfirmationEmailSettingsFromAttribute>>() ?? throw new NullReferenceException();
-IOptions<ClosureEmailSettingsFromAttribute> closureEmailSettingsFromAttribute = serviceProvider.GetService<IOptions<ClosureEmailSettingsFromAttribute>>() ?? throw new NullReferenceException();
-
 Console.WriteLine($"""
 DataAnnotation
 Text from DataAnnotationWithNoValidationOrSectionNameSettings: {_dataAnnotationWithNoValidationOrSectionNameSettings.Value.Text}
@@ -45,11 +42,6 @@ Text from FluentValidationWithNoValidationButWithSectionNameSettings: {_fluentVa
 Text from FluentValidationWithValidationButNoSectionNameSettings: {_fluentValidationWithValidationButNoSectionNameSettings.Value.Text}
 Text from FluentValidationWithValidationAndSectionNameSettings: {_fluentValidationWithValidationAndSectionNameSettings.Value.Text}
 Text from FluentValidationNestedSettings: {_fluentValidationNestedSettings.Value.Text}
-""");
-
-Console.WriteLine($"""
-Subject from ConfirmationEmailSettingsFromAttribute: {confirmationEmailSettingsFromAttribute.Value.Subject}
-Subject from ClosureEmailSettingsFromAttribute: {closureEmailSettingsFromAttribute.Value.Subject}
 """);
 
 Console.ReadLine();

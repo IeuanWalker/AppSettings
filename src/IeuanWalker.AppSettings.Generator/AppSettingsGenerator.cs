@@ -143,40 +143,9 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 
 	static string GetSectionName(INamedTypeSymbol namedTypeSymbol, TypeDeclarationSyntax typeDeclarationSyntax)
 	{
-		string sectionName = namedTypeSymbol.Name;
-
-		foreach (ISymbol member in namedTypeSymbol.GetMembers("SectionName"))
-		{
-			if (member is IPropertySymbol propertySymbol && propertySymbol.IsStatic &&
-				propertySymbol.Type.SpecialType == SpecialType.System_String)
-			{
-				// Find the declaration node for this property
-				PropertyDeclarationSyntax? declarationSyntax = typeDeclarationSyntax.DescendantNodes()
-					.OfType<PropertyDeclarationSyntax>()
-					.FirstOrDefault(p => p.Identifier.Text == "SectionName");
-
-				if (declarationSyntax?.ExpressionBody != null)
-				{
-					// Handle expression-bodied property: static string SectionName => "Value"
-					LiteralExpressionSyntax? literalExpr = declarationSyntax.ExpressionBody.Expression as LiteralExpressionSyntax;
-					if (literalExpr?.Token.ValueText is string literalValue)
-					{
-						sectionName = literalValue;
-					}
-				}
-				else if (declarationSyntax?.Initializer != null)
-				{
-					// Handle property with initializer: static string SectionName { get; } = "Value"
-					LiteralExpressionSyntax? literalExpr = declarationSyntax.Initializer.Value as LiteralExpressionSyntax;
-					if (literalExpr?.Token.ValueText is string literalValue)
-					{
-						sectionName = literalValue;
-					}
-				}
-
-				break;
-			}
-		}
+		// Get the value from the SectionNameAttribute constructor if it exists, otherwise use the Type name
+		AttributeData? sectionNameAttribute = namedTypeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == "SectionNameAttribute");
+		string sectionName = (string?)sectionNameAttribute?.ConstructorArguments[0].Value ??  namedTypeSymbol.Name;
 
 		return sectionName;
 	}

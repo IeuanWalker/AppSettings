@@ -207,8 +207,6 @@ public static class AppSettingsConfiguration
 ");
 		foreach ((string settingsClass, string? validatorClass, string sectionName) in settingsClasses)
 		{
-			builder.AppendLine();
-
 			if (validatorClass is null)
 			{
 				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>()");
@@ -225,11 +223,12 @@ public static class AppSettingsConfiguration
 				builder.AppendLine($"\t\t\t.ValidateFluentValidation()");
 				builder.AppendLine($"\t\t\t.ValidateOnStart();");
 			}
+
+			builder.AppendLine();
 		}
 
-		builder.Append(@"  
-		return services;
-	}");
+		builder.AppendLine("\t\treturn services;");
+		builder.AppendLine("\t}");
 
 		// Only add the IHostApplicationBuilder extension if it's available
 		if (hasIHostApplicationBuilder)

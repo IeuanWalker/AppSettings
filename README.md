@@ -75,7 +75,7 @@ You can perform validation on startup using DataAnnotations or FluentValidation.
 ### DataAnnotation
 All you need to do is add a DataAnnotation attribute onto any property
 ```csharp
-public class ConfirmationEmailSettings : IAppSettings<ConfirmationEmailSettingsValidator>
+public class ConfirmationEmailSettings : IAppSettings
 {
 	[MinLength(5)]
 	public required string Subject { get; set; }

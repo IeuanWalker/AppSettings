@@ -15,6 +15,7 @@ public class DataAnnotationWithNoValidationButWithSectionNameSettings : IAppSett
 {
 	public required string Text { get; set; }
 }
+[DontValidate]
 public class DataAnnotationWithValidationButNoSectionNameSettings : IAppSettings
 {
 	[MinLength(5)]
@@ -49,6 +50,8 @@ public class FluentValidationWithNoValidationButWithSectionNameSettings : IAppSe
 {
 	public required string Text { get; set; }
 }
+
+[DontValidate]
 public class FluentValidationWithValidationButNoSectionNameSettings : IAppSettings<FluentValidationWithValidationButNoSectionNameSettingsValidator>
 {
 	public required string Text { get; set; }

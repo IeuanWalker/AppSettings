@@ -11,9 +11,10 @@ namespace IeuanWalker.AppSettings.Generator;
 [Generator]
 public class AppSettingsSourceGenerator : IIncrementalGenerator
 {
-	const string fullInterfaceBase = "IeuanWalker.AppSettings.IAppSettings";
-	const string fullInterface = "IeuanWalker.AppSettings.IAppSettings`1";
-	const string fullAttribute = "IeuanWalker.AppSettings.SectionNameAttribute";
+	const string fullIAppSettingsBase = "IeuanWalker.AppSettings.IAppSettings";
+	const string fullIAppSettingsValidator = "IeuanWalker.AppSettings.IAppSettings`1";
+	const string fullSectionNameAttribute = "IeuanWalker.AppSettings.SectionNameAttribute";
+	const string fullDontValidateAttribute = "IeuanWalker.AppSettings.DontValidateAttribute";
 	static string? assemblyName;
 	static INamedTypeSymbol? attributeSymbol;
 	static readonly DiagnosticDescriptor diagnosticDescriptorValidatorWrongType = new(
@@ -22,6 +23,13 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		messageFormat: "The validator type '{0}' must validate the settings class '{1}'",
 		category: "AppSettings",
 		defaultSeverity: DiagnosticSeverity.Error,
+		isEnabledByDefault: true);
+	static readonly DiagnosticDescriptor diagnosticDescriptorValidatorButDontValidateType = new(
+		id: "APPSET002",
+		title: "Conflicting validation configuration",
+		messageFormat: "Type '{0}' has both a validator configured and the DontValidateAttribute applied. The DontValidateAttribute will prevent validation from occurring.",
+		category: "AppSettings",
+		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true);
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -47,10 +55,10 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		// Get the assembly name from the compilation
 		assemblyName = compilation.Assembly.Name.Trim();
 
-		List<(string SettingsClassFullName, string? ValidatorClassFullName, string sectionName)> settingsClasses = [];
+		List<(string SettingsClassFullName, string? ValidatorClassFullName, string sectionName, bool dontValidate)> settingsClasses = [];
 
 		// Get the IAppSettings interface symbol to check against
-		INamedTypeSymbol? appSettingsInterfaceBase = compilation.GetTypeByMetadataName(fullInterfaceBase);
+		INamedTypeSymbol? appSettingsInterfaceBase = compilation.GetTypeByMetadataName(fullIAppSettingsBase);
 
 		if (appSettingsInterfaceBase is null)
 		{
@@ -58,15 +66,18 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		}
 
 		// Get the IAppSettings`1 interface symbol to check against
-		INamedTypeSymbol? appSettingsInterface = compilation.GetTypeByMetadataName(fullInterface);
+		INamedTypeSymbol? appSettingsInterface = compilation.GetTypeByMetadataName(fullIAppSettingsValidator);
 
 		if (appSettingsInterface is null)
 		{
 			return;
 		}
 
+		// Get the DontValidateAttribute symbol to check against
+		INamedTypeSymbol? dontValidateAttribute = compilation.GetTypeByMetadataName(fullDontValidateAttribute);
+
 		// Get the SectionNameAttribute symbol to check against
-		attributeSymbol = compilation.GetTypeByMetadataName(fullAttribute);
+		attributeSymbol = compilation.GetTypeByMetadataName(fullSectionNameAttribute);
 
 		// Get the IValidator`1 interface symbol to check against
 		INamedTypeSymbol? iValidatorBase = compilation.GetTypeByMetadataName("FluentValidation.IValidator`1");
@@ -130,7 +141,18 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 					}
 				}
 
-				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol)));
+				// Check if the class has the DontValidate attribute
+				bool dontValidate = dontValidateAttribute is not null && typeSymbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dontValidateAttribute));
+
+				if (dontValidate && validatorClass is not null)
+				{
+					context.ReportDiagnostic(Diagnostic.Create(
+						diagnosticDescriptorValidatorButDontValidateType,
+						typeDeclaration.GetLocation(),
+						typeSymbol.Name));
+				}
+
+				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol), dontValidate));
 			}
 		}
 
@@ -159,7 +181,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		return sectionName;
 	}
 
-	static string GenerateAppSettingsConfigurationClass(List<(string SettingsClassName, string? ValidatorClassName, string sectionName)> settingsClasses, bool hasIHostApplicationBuilder, bool hasMauiAppBuilder)
+	static string GenerateAppSettingsConfigurationClass(List<(string SettingsClassName, string? ValidatorClassName, string sectionName, bool dontValidate)> settingsClasses, bool hasIHostApplicationBuilder, bool hasMauiAppBuilder)
 	{
 		StringBuilder builder = new();
 
@@ -183,9 +205,14 @@ public static class AppSettingsConfiguration
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddAppSettingsFrom").Append(assemblyName?.Sanitize(string.Empty) ?? "Assembly").Append(@"(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration)
 	{
 ");
-		foreach ((string settingsClass, string? validatorClass, string sectionName) in settingsClasses)
+		foreach ((string settingsClass, string? validatorClass, string sectionName, bool dontValidate) in settingsClasses)
 		{
-			if (validatorClass is null)
+			if (dontValidate)
+			{
+				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>()");
+				builder.AppendLine($"\t\t\t.Configure(options => configuration.GetSection(\"{sectionName}\").Bind(options));");
+			}
+			else if (validatorClass is null)
 			{
 				builder.AppendLine($"\t\tservices.AddOptions<global::{settingsClass}>()");
 				builder.AppendLine($"\t\t\t.Configure(options => configuration.GetSection(\"{sectionName}\").Bind(options))");

@@ -241,6 +241,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			// Only add the IHostApplicationBuilder extension if it's available
 			if (hasIHostApplicationBuilder)
 			{
+				builder.AppendLine();
 				builder.AppendLine($"public static Microsoft.Extensions.Hosting.IHostApplicationBuilder AddAppSettingsFrom{sanitisedAssemblyName}(this Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)");
 				using (builder.AppendBlock())
 				{
@@ -253,6 +254,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 			// Only add the MauiAppBuilder extension if it's available
 			if (hasMauiAppBuilder)
 			{
+				builder.AppendLine();
 				builder.AppendLine($"public static MauiAppBuilder AddAppSettingsFrom{sanitisedAssemblyName}(this MauiAppBuilder builder)");
 				using (builder.AppendBlock())
 				{

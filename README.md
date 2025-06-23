@@ -1,6 +1,6 @@
 # AppSettings [![Nuget](https://img.shields.io/nuget/v/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![Nuget](https://img.shields.io/nuget/dt/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Automatically generates the registration code for IOptions and can optionally validate them on startup using [fluent validation](https://docs.fluentvalidation.net/en/latest/).
+Automatically generates the registration code for IOptions and can validate them on startup using [DataAnnotations](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-9.0#options-validation) or [fluent validation](https://docs.fluentvalidation.net/en/latest/).
 
 ## How to use it?
 1. Install the [NuGet package](https://www.nuget.org/packages/IeuanWalker.AppSettings) into your project.
@@ -70,7 +70,20 @@ public class ConfirmationEmailSettings : IAppSettings
 ```
 
 ## Validation
-To perform validation on startup using Fluent Validation, you just need to create an `AbstractValidator` for your app settings model and add that validator to the `IAppSettings` inheritance.
+You can perform validation on startup using DataAnnotations or FluentValidation.
+
+### DataAnnotation
+All you need to do is add a DataAnnotation attribute onto any property
+```csharp
+public class ConfirmationEmailSettings : IAppSettings<ConfirmationEmailSettingsValidator>
+{
+	[MinLength(5)]
+	public required string Subject { get; set; }
+}
+```
+
+### FluentValidation
+To use FluentValidation you need to create an `AbstractValidator` for your app settings model and add that validator to the `IAppSettings` inheritance.
 ```csharp
 public class ConfirmationEmailSettings : IAppSettings<ConfirmationEmailSettingsValidator>
 {
@@ -88,10 +101,52 @@ sealed class ConfirmationEmailSettingsValidator : AbstractValidator<Confirmation
 }
 ```
 
+## Use FluentValidation without the source generator
+You can use FluentValidation without the source generator by not inheriting from `IAppSettings` and using the extension method
+
+```csharp
+public class ConfirmationEmailSettings
+{
+	public required string Subject { get; set; }
+}
+
+sealed class ConfirmationEmailSettingsValidator : AbstractValidator<ConfirmationEmailSettings>
+{
+	public ConfirmationEmailSettingsValidator()
+	{
+		RuleFor(x => x.Subject)
+			.NotEmpty()
+			.MinimumLength(5);
+	}
+}
+```
+In your startup -
+```csharp
+services.AddScoped<IValidator<ConfirmationEmailSettings>, ConfirmationEmailSettingsValidator>();
+services.AddOptions<ConfirmationEmailSettings>()
+    .Configure(options => configuration.GetSection("FluentValidationWithValidationButNoSectionNameSettings").Bind(options))
+    .ValidateFluentValidation()
+    .ValidateOnStart();
+```
+
 # What does the error look like?
 If something fails validation as the application starts up, you will get an exception explaining the exact issue - 
 ![image](https://github.com/user-attachments/assets/27465386-3970-49f7-863b-037313f4370f)
 
+# What does the generated code look like?
+The generated code is just standard C#/ .NET APIs - 
+> Left is the AppSettings model, Right is the generated code 
+![image](https://github.com/user-attachments/assets/4411edfc-b9e4-4eae-9cd2-c354832965b2)
+
+
 # Considerations
-I do not recommend adding validation to a MAUI project as it can/ will slow startup.
+I do not recommend adding validation to a MAUI project as it can/ will slow startup. To prevent validation, add the `DontValidate` attribute above your class.
+```
+[DontValidate]
+public class MobileAppSettings : IAppSettings
+{
+	public required string Subject { get; set; }
+}
+```
+
 

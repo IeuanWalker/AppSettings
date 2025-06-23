@@ -1,10 +1,17 @@
 namespace IeuanWalker.AppSettings;
 
 /// <summary>
-/// Use this attribute to prevent validating classes that implement the IAppSetting interface.
-/// When applied, the class will be excluded from the validation process.
+/// Use this attribute when the configuration section name differs from the class name.
 /// </summary>
+/// <param name="sectionName">The name of the section</param>
+/// <remarks>
+/// <para>
+/// Supports hierarchical paths using the colon separator.
+/// </para>
+/// [SectionName("Section:ChildSection")]
+/// </remarks>
 [AttributeUsage(AttributeTargets.Class)]
-public class DontValidateAttribute : Attribute
+public class SectionNameAttribute(string sectionName) : Attribute
 {
+	public string SectionName { get; } = sectionName;
 }

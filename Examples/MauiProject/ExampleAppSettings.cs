@@ -50,6 +50,8 @@ public class FluentValidationWithNoValidationButWithSectionNameSettings : IAppSe
 {
 	public required string Text { get; set; }
 }
+
+[DontValidate]
 public class FluentValidationWithValidationButNoSectionNameSettings : IAppSettings<FluentValidationWithValidationButNoSectionNameSettingsValidator>
 {
 	public required string Text { get; set; }

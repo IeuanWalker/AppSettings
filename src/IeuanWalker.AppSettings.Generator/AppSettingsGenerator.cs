@@ -24,6 +24,13 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 		category: "AppSettings",
 		defaultSeverity: DiagnosticSeverity.Error,
 		isEnabledByDefault: true);
+	static readonly DiagnosticDescriptor diagnosticDescriptorValidatorButDontValidateType = new(
+		id: "APPSET002",
+		title: "Conflicting validation configuration",
+		messageFormat: "Type '{0}' has both a validator configured and the DontValidateAttribute applied. The DontValidateAttribute will prevent validation from occurring.",
+		category: "AppSettings",
+		defaultSeverity: DiagnosticSeverity.Warning,
+		isEnabledByDefault: true);
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
@@ -136,6 +143,14 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 
 				// Check if the class has the DontValidate attribute
 				bool dontVaidate = dontValidateAttribute is not null && typeSymbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dontValidateAttribute));
+
+				if (dontVaidate && validatorClass is not null)
+				{
+					context.ReportDiagnostic(Diagnostic.Create(
+						diagnosticDescriptorValidatorButDontValidateType,
+						typeDeclaration.GetLocation(),
+						typeSymbol.Name));
+				}
 
 				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol), dontVaidate));
 			}

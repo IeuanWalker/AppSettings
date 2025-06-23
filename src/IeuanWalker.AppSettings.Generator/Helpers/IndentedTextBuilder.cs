@@ -48,12 +48,8 @@ class IndentedTextBuilder : IDisposable
 
 struct Block(IndentedTextBuilder? builder) : IDisposable
 {
-	/// <summary>
-	/// The <see cref="IndentedTextBuilder"/> instance to write to.
-	/// </summary>
 	IndentedTextBuilder? builder = builder;
 
-	/// <inheritdoc/>
 	public void Dispose()
 	{
 		IndentedTextBuilder? builder = this.builder;

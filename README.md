@@ -101,7 +101,7 @@ sealed class ConfirmationEmailSettingsValidator : AbstractValidator<Confirmation
 }
 ```
 
-# Use FluentValidation without the source generator
+## Use FluentValidation without the source generator
 You can use FluentValidation without the source generator by not inheriting from `IAppSettings` and using the extension method
 
 ```csharp
@@ -123,10 +123,10 @@ sealed class ConfirmationEmailSettingsValidator : AbstractValidator<Confirmation
 In your startup -
 ```csharp
 services.AddScoped<IValidator<ConfirmationEmailSettings>, ConfirmationEmailSettingsValidator>();
-		services.AddOptions<ConfirmationEmailSettings>()
-			.Configure(options => configuration.GetSection("FluentValidationWithValidationButNoSectionNameSettings").Bind(options))
-			.ValidateFluentValidation()
-			.ValidateOnStart();
+services.AddOptions<ConfirmationEmailSettings>()
+    .Configure(options => configuration.GetSection("FluentValidationWithValidationButNoSectionNameSettings").Bind(options))
+    .ValidateFluentValidation()
+    .ValidateOnStart();
 ```
 
 # What does the error look like?

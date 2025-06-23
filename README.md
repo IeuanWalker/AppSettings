@@ -75,7 +75,7 @@ You can perform validation on startup using DataAnnotations or FluentValidation.
 ### DataAnnotation
 All you need to do is add a DataAnnotation attribute onto any property
 ```csharp
-public class ConfirmationEmailSettings : IAppSettings<ConfirmationEmailSettingsValidator>
+public class ConfirmationEmailSettings : IAppSettings
 {
 	[MinLength(5)]
 	public required string Subject { get; set; }
@@ -141,7 +141,7 @@ The generated code is just standard C#/ .NET APIs -
 
 # Considerations
 I do not recommend adding validation to a MAUI project as it can/ will slow startup. To prevent validation, add the `DontValidate` attribute above your class.
-```
+```csharp
 [DontValidate]
 public class MobileAppSettings : IAppSettings
 {

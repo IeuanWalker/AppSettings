@@ -102,7 +102,7 @@ sealed class ConfirmationEmailSettingsValidator : AbstractValidator<Confirmation
 ```
 
 # Use FluentValidation without the source generator
-You can use FluentValidation without the source generator by not inheriting from `IAppSettings` and using the 
+You can use FluentValidation without the source generator by not inheriting from `IAppSettings` and using the extension method
 
 ```csharp
 public class ConfirmationEmailSettings

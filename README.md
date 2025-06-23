@@ -1,6 +1,6 @@
 # AppSettings [![Nuget](https://img.shields.io/nuget/v/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![Nuget](https://img.shields.io/nuget/dt/IeuanWalker.AppSettings)](https://www.nuget.org/packages/IeuanWalker.AppSettings) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Automatically generates the registration code for IOptions and can optionally validate them on startup using [fluent validation](https://docs.fluentvalidation.net/en/latest/).
+Automatically generates the registration code for IOptions and can validate them on startup using [DataAnnotations](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-9.0#options-validation) or [fluent validation](https://docs.fluentvalidation.net/en/latest/).
 
 ## How to use it?
 1. Install the [NuGet package](https://www.nuget.org/packages/IeuanWalker.AppSettings) into your project.
@@ -70,7 +70,20 @@ public class ConfirmationEmailSettings : IAppSettings
 ```
 
 ## Validation
-To perform validation on startup using Fluent Validation, you just need to create an `AbstractValidator` for your app settings model and add that validator to the `IAppSettings` inheritance.
+You can perform validation on startup using DataAnnotations or FluentValidation.
+
+### DataAnnotation
+All you need to do is add a DataAnnotation attribute onto any property
+```csharp
+public class ConfirmationEmailSettings : IAppSettings<ConfirmationEmailSettingsValidator>
+{
+	[MinLength(5)]
+	public required string Subject { get; set; }
+}
+```
+
+### FluentValidation
+To use FluentValidation you need to create an `AbstractValidator` for your app settings model and add that validator to the `IAppSettings` inheritance.
 ```csharp
 public class ConfirmationEmailSettings : IAppSettings<ConfirmationEmailSettingsValidator>
 {

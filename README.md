@@ -101,6 +101,34 @@ sealed class ConfirmationEmailSettingsValidator : AbstractValidator<Confirmation
 }
 ```
 
+# Use FluentValidation without the source generator
+You can use FluentValidation without the source generator by not inheriting from `IAppSettings` and using the 
+
+```csharp
+public class ConfirmationEmailSettings
+{
+	public required string Subject { get; set; }
+}
+
+sealed class ConfirmationEmailSettingsValidator : AbstractValidator<ConfirmationEmailSettings>
+{
+	public ConfirmationEmailSettingsValidator()
+	{
+		RuleFor(x => x.Subject)
+			.NotEmpty()
+			.MinimumLength(5);
+	}
+}
+```
+In your startup -
+```csharp
+services.AddScoped<IValidator<ConfirmationEmailSettings>, ConfirmationEmailSettingsValidator>();
+		services.AddOptions<ConfirmationEmailSettings>()
+			.Configure(options => configuration.GetSection("FluentValidationWithValidationButNoSectionNameSettings").Bind(options))
+			.ValidateFluentValidation()
+			.ValidateOnStart();
+```
+
 # What does the error look like?
 If something fails validation as the application starts up, you will get an exception explaining the exact issue - 
 ![image](https://github.com/user-attachments/assets/27465386-3970-49f7-863b-037313f4370f)
@@ -114,4 +142,5 @@ public class MobileAppSettings : IAppSettings
 	public required string Subject { get; set; }
 }
 ```
+
 

@@ -133,6 +133,12 @@ services.AddScoped<IValidator<ConfirmationEmailSettings>, ConfirmationEmailSetti
 If something fails validation as the application starts up, you will get an exception explaining the exact issue - 
 ![image](https://github.com/user-attachments/assets/27465386-3970-49f7-863b-037313f4370f)
 
+# What does the generated code look like?
+The generated code is just standard C#/ .NET APIs - 
+> Left is the AppSettings model, Right is the generated code 
+![image](https://github.com/user-attachments/assets/4411edfc-b9e4-4eae-9cd2-c354832965b2)
+
+
 # Considerations
 I do not recommend adding validation to a MAUI project as it can/ will slow startup. To prevent validation, add the `DontValidate` attribute above your class.
 ```

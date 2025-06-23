@@ -142,9 +142,9 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 				}
 
 				// Check if the class has the DontValidate attribute
-				bool dontVaidate = dontValidateAttribute is not null && typeSymbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dontValidateAttribute));
+				bool dontValidate = dontValidateAttribute is not null && typeSymbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dontValidateAttribute));
 
-				if (dontVaidate && validatorClass is not null)
+				if (dontValidate && validatorClass is not null)
 				{
 					context.ReportDiagnostic(Diagnostic.Create(
 						diagnosticDescriptorValidatorButDontValidateType,
@@ -152,7 +152,7 @@ public class AppSettingsSourceGenerator : IIncrementalGenerator
 						typeSymbol.Name));
 				}
 
-				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol), dontVaidate));
+				settingsClasses.Add((typeSymbol.ToDisplayString(), validatorClass, GetSectionName(typeSymbol), dontValidate));
 			}
 		}
 

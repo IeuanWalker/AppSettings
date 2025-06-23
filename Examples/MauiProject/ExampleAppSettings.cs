@@ -15,6 +15,7 @@ public class DataAnnotationWithNoValidationButWithSectionNameSettings : IAppSett
 {
 	public required string Text { get; set; }
 }
+[DontValidate]
 public class DataAnnotationWithValidationButNoSectionNameSettings : IAppSettings
 {
 	[MinLength(5)]

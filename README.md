@@ -141,7 +141,7 @@ The generated code is just standard C#/ .NET APIs -
 
 # Considerations
 I do not recommend adding validation to a MAUI project as it can/ will slow startup. To prevent validation, add the `DontValidate` attribute above your class.
-```
+```csharp
 [DontValidate]
 public class MobileAppSettings : IAppSettings
 {

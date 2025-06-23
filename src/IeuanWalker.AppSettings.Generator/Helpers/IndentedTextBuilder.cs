@@ -13,11 +13,11 @@ class IndentedTextBuilder : IDisposable
 		writer = new IndentedTextWriter(output);
 	}
 
-	public void Write(string value) => writer.Write(value);
+	public void Append(string value) => writer.Write(value);
 
-	public void WriteLine(string value) => writer.WriteLine(value);
+	public void AppendLine(string value) => writer.WriteLine(value);
 
-	public void WriteLine() => writer.WriteLine();
+	public void AppendLine() => writer.WriteLine();
 
 	public void IncreaseIndent() => writer.Indent++;
 
@@ -25,18 +25,18 @@ class IndentedTextBuilder : IDisposable
 
 	public override string ToString() => output.ToString();
 	
-	public Block WriteBlock()
+	public Block AppendBlock()
 	{
-		WriteLine("{");
+		AppendLine("{");
 		IncreaseIndent();
 
 		return new(this);
 	}
 	
-	public Block WriteBlock(string value)
+	public Block AppendBlock(string value)
 	{
-		WriteLine(value);
-		return WriteBlock();
+		AppendLine(value);
+		return AppendBlock();
 	}
 
 	public void Dispose()
@@ -63,7 +63,7 @@ struct Block(IndentedTextBuilder? builder) : IDisposable
 		if (builder is not null)
 		{
 			builder.DecreaseIndent();
-			builder.WriteLine("}");
+			builder.AppendLine("}");
 		}
 	}
 }
